@@ -1,8 +1,5 @@
-=======================================
-SQLAlchemy Helpers's documentation
-=======================================
-
-Describe SQLAlchemy Helpers here.
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
 
 
 .. Release Notes

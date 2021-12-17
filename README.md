@@ -5,6 +5,7 @@ This project contains a tools to use SQLAlchemy and Alembic in a project.
 It has a Flask integration, and other framework integrations could be added in
 the future.
 
+The full documentation is [on ReadTheDocs](https://sqlalchemy-helpers.readthedocs.io>).
 
 ## Flask integration
 
@@ -115,7 +116,6 @@ Also set `script_location` in you alembic.ini file in order to use it with the
 [alembic]
 script_location = %(here)s
 ```
-
 
 ### Full example
 

@@ -44,6 +44,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
+    "myst_parser",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -86,6 +87,13 @@ html_static_path = ["_static"]
 
 
 # -- Extension configuration -------------------------------------------------
+
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
 
 # -- Options for intersphinx extension ---------------------------------------
 
