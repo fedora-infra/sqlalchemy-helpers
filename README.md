@@ -5,7 +5,7 @@ This project contains a tools to use SQLAlchemy and Alembic in a project.
 It has a Flask integration, and other framework integrations could be added in
 the future.
 
-The full documentation is [on ReadTheDocs](https://sqlalchemy-helpers.readthedocs.io>).
+The full documentation is [on ReadTheDocs](https://sqlalchemy-helpers.readthedocs.io).
 
 You can install it [from PyPI](https://pypi.org/project/sqlalchemy-helpers/).
 
