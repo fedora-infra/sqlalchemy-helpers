@@ -29,7 +29,7 @@ def test_sync_db(full_app, tmpdir):
 
     def syncdb():
         return subprocess.run(
-            [sys.executable, "-m", "flask", "db", "syncdb"],
+            [sys.executable, "-m", "flask", "db", "sync"],
             check=True,
             stdout=subprocess.PIPE,
             universal_newlines=True,

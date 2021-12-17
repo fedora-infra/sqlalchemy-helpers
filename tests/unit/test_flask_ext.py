@@ -77,22 +77,22 @@ def test_flask_ext_script(flask_app, mocker):
         assert not exists_in_db(db.session.get_bind(), "users")
         assert db.manager.get_current_revision(db.session) is None
     assert "db" in flask_app.cli.commands
-    assert "syncdb" in flask_app.cli.commands["db"].commands
-    syncdb_cmd = flask_app.cli.commands["db"].commands["syncdb"]
+    assert "sync" in flask_app.cli.commands["db"].commands
+    sync_cmd = flask_app.cli.commands["db"].commands["sync"]
     runner = flask_app.test_cli_runner()
-    result = runner.invoke(syncdb_cmd)
+    result = runner.invoke(sync_cmd)
     with flask_app.app_context():
         assert exists_in_db(db.session.get_bind(), "users")
         assert db.manager.get_current_revision(db.session) is not None
     assert "Database created." in result.output
-    result = runner.invoke(syncdb_cmd)
+    result = runner.invoke(sync_cmd)
     assert "Database already up-to-date." in result.output
     with flask_app.app_context():
         alembic.command.revision(db.manager.alembic_cfg, rev_id="second")
-    result = runner.invoke(syncdb_cmd)
+    result = runner.invoke(sync_cmd)
     assert "Database upgraded." in result.output
     mocker.patch("sqlalchemy_helpers.flask_ext._get_manager")
-    result = runner.invoke(syncdb_cmd)
+    result = runner.invoke(sync_cmd)
     assert "Unexpected sync result:" in result.output
 
 

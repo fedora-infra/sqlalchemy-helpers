@@ -68,7 +68,7 @@ class DatabaseExtension:
         app.teardown_appcontext(self.teardown)
         # CLI
         db_cli = AppGroup("db", help="Database operations.")
-        db_cli.command("syncdb", help="Create or migrate the database.")(_syncdb)
+        db_cli.command("sync", help="Create or migrate the database.")(_syncdb)
         app.cli.add_command(db_cli)
         # Import all modules here that might define models so that
         # they will be registered properly on the metadata.
@@ -147,7 +147,7 @@ def first_or_404(query, description=None):
 def get_url_from_app(app_factory):
     """Get the DB URI from the app configuration
 
-    Create the application if it hasn't been created yet.
+    Create the application if it hasn't been created yet. This is useful in Alembic's ``env.py``.
 
     Args: app_factory (callable): the Flask application factory, to be called if this function is
         called outside of and application context.
