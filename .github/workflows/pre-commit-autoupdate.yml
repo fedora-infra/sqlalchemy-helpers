@@ -21,7 +21,10 @@ jobs:
           python-version: 3.8
 
       - name: Install pre-commit
-        run: pip install pre-commit
+        run: pip install pre-commit poetry
+
+      - name: Run poetry install
+        run: poetry install
 
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
