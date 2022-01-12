@@ -52,17 +52,17 @@ pull_request_rules:
       - check-success=Unit tests (py39)
       - check-success=Unit tests (py310)
 
-# Pre-commit autoupdates. Don't expect the CI to have run for this one:
-# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#triggering-new-workflows-using-a-personal-access-token
-# In the workflow, we do a pre-commit run before creating the PR.
-- name: Merge pre-commit autoupdates
-  actions:
-    merge:
-      method: rebase
-      rebase_fallback: none
-  conditions:
-    - label!=no-mergify
-    - -draft
-    - author=github-actions[bot]
-    - title=Auto-update pre-commit hooks
-    - "#changes-requested-reviews-by=0"
+  # Pre-commit autoupdates. Don't expect the CI to have run for this one:
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#triggering-new-workflows-using-a-personal-access-token
+  # In the workflow, we do a pre-commit run before creating the PR.
+  - name: Merge pre-commit autoupdates
+    actions:
+      merge:
+        method: rebase
+        rebase_fallback: none
+    conditions:
+      - label!=no-mergify
+      - -draft
+      - author=github-actions[bot]
+      - title=Auto-update pre-commit hooks
+      - "#changes-requested-reviews-by=0"
