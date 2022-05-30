@@ -156,6 +156,37 @@ template](https://github.com/fedora-infra/cookiecutter-flask-webapp/) that
 showcases this Flask integration, feel free to check it out or even use it if
 it suits your needs.
 
+### Openshift health checks
+
+Being able to programmatically know whether the database schema is up-to-date
+is very useful when working cloud services that check that your application
+is actually available, such as OpenShift/Kubernetes. If you're using
+[flask-healthz](https://github.com/fedora-infra/flask-healthz/) you can write
+a pretty clever readiness function such as:
+
+```python
+from flask_healthz import HealthError
+from .database import db
+
+def liveness():
+    pass
+
+def readiness():
+    latest = db.manager.get_latest_revision()
+    try:
+        current = db.manager.get_current_revision(session=db.session)
+    except Exception as e:
+        raise HealthError(f"Can't get the database revision: {e}")
+    if current is None:
+        raise HealthError("Can't connect to the database")
+    if current != latest:
+        raise HealthError("The database schema needs to be updated")
+```
+
+With this function, OpenShift will not forward requests to the updated version
+of your application if there are pending schema changes, and will keep serving
+from the old version until you've applied the database migration.
+
 ## FAQ
 
 - Why not use [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com)
