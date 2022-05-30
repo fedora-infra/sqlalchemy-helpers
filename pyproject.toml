@@ -60,7 +60,7 @@ myst-parser = "*"
 
 [tool.poetry.extras]
 flask = ["Flask"]
-docs = ["sphinx", "myst-parser"]
+docs = ["sphinx", "myst-parser", "Flask"]
 
 
 [build-system]
