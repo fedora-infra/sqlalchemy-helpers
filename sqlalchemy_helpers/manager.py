@@ -123,7 +123,7 @@ class SyncResult(enum.Enum):
 
 @sa_event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    """Automaticall activate foreign keys on SQLite databases."""
+    """Automatically activate foreign keys on SQLite databases."""
     if isinstance(dbapi_connection, SQLite3Connection):  # pragma: no cover
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
