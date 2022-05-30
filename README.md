@@ -142,7 +142,7 @@ target_metadata = Base.metadata
 Also set `script_location` in you alembic.ini file in order to use it with the
 `alembic` command-line tool:
 
-```python
+```ini
 # migrations/alembic.ini
 
 [alembic]
