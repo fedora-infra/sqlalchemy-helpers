@@ -36,7 +36,7 @@ In the application factory, import the instance and call its `.init_app()` metho
 # app.py
 
 from flask import Flask
-from sqlalchemy_helpers.database import db
+from .database import db
 
 def create_app():
     """See https://flask.palletsprojects.com/en/1.1.x/patterns/appfactories/"""
