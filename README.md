@@ -2,8 +2,8 @@
 
 This project contains a tools to use SQLAlchemy and Alembic in a project.
 
-It has a Flask integration, and other framework integrations could be added in
-the future.
+It has a Flask integration, and other framework integrations could be added
+in the future.
 
 The full documentation is [on ReadTheDocs](https://sqlalchemy-helpers.readthedocs.io).
 
@@ -22,19 +22,26 @@ Here's what sqlalchemy-helpers provides:
   - programmatically create or upgrade your schema,
   - get schema version information,
   - drop your tables without leaving alembic information behind
-  - use a function in your `env.py` script to retrieve the database URL, and thus avoid repeating
-    your configuration in two places.
+  - use a function in your `env.py` script to retrieve the database URL, and
+    thus avoid repeating your configuration in two places.
   - migration helper functions such as `is_sqlite()` or `exists_in_db()`
 - SQLAlchemy naming convention for easier schema upgrades
 - Automatically activate foreign keys on SQLite
 - Enablement of the `query` property on your models
-- A query function `get_or_create()` that you can call directly or use on your model classes
-- Optional Flask integration: you can use sqlalchemy-helpers outside of a Flask app and feel at home
-- The models created with sqlalchemy-helpers work both inside and outside the Flask application context
+- A query function `get_or_create()` that you can call directly or use on your
+  model classes
+- Optional Flask integration: you can use sqlalchemy-helpers outside of a
+  Flask app and feel at home
+- The models created with sqlalchemy-helpers work both inside and outside the
+  Flask application context
+
+This project has 100% code coverage and aims at reliably sharing some of the
+basic boilerplate between applications that use SQLAlchemy.
 
 ## Flask integration
 
-This projects provides a Flask integration layer for Flask >= 2.0.0. This is how you can use it.
+This projects provides a Flask integration layer for Flask >= 2.0.0. This is
+how you can use it.
 
 First, create a python module to instanciate the `DatabaseExtension`, and
 re-export some useful helpers:
