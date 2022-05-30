@@ -8,7 +8,7 @@ on:
       - stable
       - develop
 
-name: Run tests
+name: Tests
 
 jobs:
   checks:
