@@ -155,3 +155,11 @@ In Fedora Infrastructure we use [a cookiecutter
 template](https://github.com/fedora-infra/cookiecutter-flask-webapp/) that
 showcases this Flask integration, feel free to check it out or even use it if
 it suits your needs.
+
+## FAQ
+
+- Why not use [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com)
+  and [Flask-Migrate](https://github.com/miguelgrinberg/Flask-Migrate/)?
+
+Those projects are great, but we also have apps that are not based on Flask
+and that would benefit from the features provided by sqlalchemy-helpers.
