@@ -3,6 +3,7 @@ import pytest
 
 from sqlalchemy_helpers.manager import (
     DatabaseManager,
+    DatabaseStatus,
     exists_in_db,
     get_or_create,
     is_sqlite,
@@ -31,6 +32,16 @@ def test_manager_create(manager):
     manager.create()
     with manager.Session() as session:
         assert manager.get_current_revision(session) == "dummy"
+
+
+def test_manager_get_status(manager):
+    assert manager.get_status() == DatabaseStatus.NO_INFO
+    alembic.command.revision(manager.alembic_cfg, rev_id="first")
+    manager.create()
+    alembic.command.revision(manager.alembic_cfg, rev_id="second")
+    assert manager.get_status() == DatabaseStatus.UPGRADE_AVAILABLE
+    alembic.command.stamp(manager.alembic_cfg, "second")
+    assert manager.get_status() == DatabaseStatus.UP_TO_DATE
 
 
 def test_manager_sync(manager):

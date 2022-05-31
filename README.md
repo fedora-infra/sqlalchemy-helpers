@@ -19,7 +19,7 @@ Here's what sqlalchemy-helpers provides:
 
 - Alembic integration:
   - programmatically create or upgrade your schema,
-  - get schema version information,
+  - get information about schema versions and status
   - drop your tables without leaving alembic information behind
   - use a function in your `env.py` script to retrieve the database URL, and
     thus avoid repeating your configuration in two places.

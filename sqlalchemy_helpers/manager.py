@@ -91,8 +91,25 @@ class DatabaseManager:
             alembic_context = MigrationContext.configure(connection)
             alembic_context._version.drop(bind=connection)
 
+    def get_status(self):
+        """Get the status of the database.
+
+        Returns:
+            DatabaseStatus member: see :class:`DatabaseStatus`."""
+        latest = self.get_latest_revision()
+        current = self.get_current_revision(session=self.Session())
+        if current is None:
+            return DatabaseStatus.NO_INFO
+        if current != latest:
+            return DatabaseStatus.UPGRADE_AVAILABLE
+        return DatabaseStatus.UP_TO_DATE
+
     def sync(self):
-        """Create or update the database schema."""
+        """Create or update the database schema.
+
+        Returns:
+            SyncResult member: see :class:`SyncResult`.
+        """
         with self.Session() as session:
             current_rev = self.get_current_revision(session)
         # If the database is empty, it should be created ; otherwise it should
@@ -105,6 +122,17 @@ class DatabaseManager:
         else:
             self.upgrade()
             return SyncResult.UPGRADED
+
+
+class DatabaseStatus(enum.Enum):
+    """The status of the database."""
+
+    UP_TO_DATE = enum.auto()
+    """Returned when the database schema is up-to-date."""
+    NO_INFO = enum.auto()
+    """Returned when the database couldn't be connected to."""
+    UPGRADE_AVAILABLE = enum.auto()
+    """Returned when the database schema can be upgraded."""
 
 
 class SyncResult(enum.Enum):
