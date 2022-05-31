@@ -149,6 +149,13 @@ Also set `script_location` in you alembic.ini file in order to use it with the
 script_location = %(here)s
 ```
 
+And that's it! You'll gain the following features:
+- a per-request session you can use with `db.session`
+- recursive auto-import of your models
+- a `db` subcommand to sync your models: just run `flask db sync`
+- two view utility functions: `get_or_404` and `first_or_404`, which let you
+  query the database and return 404 errors if the expected record is not found
+
 ### Full example
 
 In Fedora Infrastructure we use [a cookiecutter
@@ -159,10 +166,10 @@ it suits your needs.
 ### Openshift health checks
 
 Being able to programmatically know whether the database schema is up-to-date
-is very useful when working cloud services that check that your application
-is actually available, such as OpenShift/Kubernetes. If you're using
-[flask-healthz](https://github.com/fedora-infra/flask-healthz/) you can write
-a pretty clever readiness function such as:
+is very useful when working with cloud services that check that your
+application is actually available, such as OpenShift/Kubernetes. If you're
+using [flask-healthz](https://github.com/fedora-infra/flask-healthz/) you can
+write a pretty clever readiness function such as:
 
 ```python
 from flask_healthz import HealthError
