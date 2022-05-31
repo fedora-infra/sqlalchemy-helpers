@@ -99,9 +99,22 @@ class User(Base):
     timezone = Column(Unicode(127), nullable=True)
 ```
 
-In your views, you can use the instance's `session` property to access the
+Note: these models do not depend on the Flask extension, only the main part of
+sqlalchemy-helpers. They will import and work just fine without Flask.
+
+Also note that if you want to move your models away from sqlalchemy-helpers
+and back to plain SQLAlchemy, all you have to do is replace the `Base` import
+with:
+
+```python
+from sqlalchemy.orm import declarative_base
+
+Base = decalarative_base()
+```
+
+Now in your views, you can use the instance's `session` property to access the
 SQLAlchemy session object. There are also functions to ease classical view
-patters such as getting an object by ID or returning a 404 error if not found.
+patterns such as getting an object by ID or returning a 404 error if not found.
 
 ```python
 # views.py
@@ -150,6 +163,7 @@ script_location = %(here)s
 ```
 
 And that's it! You'll gain the following features:
+
 - a per-request session you can use with `db.session`
 - recursive auto-import of your models
 - a `db` subcommand to sync your models: just run `flask db sync`
