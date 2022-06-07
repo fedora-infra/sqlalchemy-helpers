@@ -374,7 +374,7 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "liccheck"
-version = "0.6.5"
+version = "0.7.1"
 description = "Check python packages from requirement.txt and report issues"
 category = "dev"
 optional = false
@@ -1233,8 +1233,8 @@ jinja2 = [
     {file = "Jinja2-3.0.3.tar.gz", hash = "sha256:611bb273cd68f3b993fabdc4064fc858c5b47a973cb5aa7999ec1ba405c87cd7"},
 ]
 liccheck = [
-    {file = "liccheck-0.6.5-py2.py3-none-any.whl", hash = "sha256:10846e587127d08609a973570eb3b8ee8cfe32a4689c8fd76d6dc74c29013c7a"},
-    {file = "liccheck-0.6.5.tar.gz", hash = "sha256:d4009f1876eb7e4228ecf495e36573ef5b8a226d4cd91235138e417f990a67e8"},
+    {file = "liccheck-0.7.1-py2.py3-none-any.whl", hash = "sha256:1b977eb20a7ad7457afa83f9a98589b5817762a516463247f1329179e8c7e3a1"},
+    {file = "liccheck-0.7.1.tar.gz", hash = "sha256:d4c18c5e1b203f3305d675b518e670a136bdceddb49b09d1efd06532336a8366"},
 ]
 mako = [
     {file = "Mako-1.1.6-py2.py3-none-any.whl", hash = "sha256:afaf8e515d075b22fad7d7b8b30e4a1c90624ff2f3733a06ec125f5a5f043a57"},
