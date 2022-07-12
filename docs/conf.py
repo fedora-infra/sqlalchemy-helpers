@@ -101,9 +101,9 @@ source_suffix = {
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 extlinks = {
-    "commit": ("https://github.com/fedora-infra/sqlalchemy-helpers/commit/%s", ""),
-    "issue": ("https://github.com/fedora-infra/sqlalchemy-helpers/issues/%s", "#"),
-    "pr": ("https://github.com/fedora-infra/sqlalchemy-helpers/pull/%s", "PR#"),
+    "commit": ("https://github.com/fedora-infra/sqlalchemy-helpers/commit/%s", "%s"),
+    "issue": ("https://github.com/fedora-infra/sqlalchemy-helpers/issues/%s", "#%s"),
+    "pr": ("https://github.com/fedora-infra/sqlalchemy-helpers/pull/%s", "PR#%s"),
 }
 
 # -- Misc -----
