@@ -56,6 +56,7 @@ liccheck = "*"
 sphinx = "^5.0.0"
 pre-commit = "*"
 myst-parser = "*"
+towncrier = "*"
 
 [tool.poetry.extras]
 flask = ["Flask"]
@@ -100,7 +101,7 @@ omit = [
 
 
 [tool.towncrier]
-package = "sqlalchemy-helpers"
+package = "sqlalchemy_helpers"
 filename = "docs/release_notes.rst"
 directory = "news/"
 title_format = "v{version}"
