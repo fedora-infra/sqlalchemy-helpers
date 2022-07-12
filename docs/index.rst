@@ -1,5 +1,5 @@
 .. include:: ../README.md
-   :parser: myst_parser.sphinx_
+   :parser: myst_parser.docutils_
 
 
 .. Release Notes
