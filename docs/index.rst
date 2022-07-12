@@ -2,15 +2,6 @@
    :parser: myst_parser.docutils_
 
 
-.. Release Notes
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Release Notes
-
-   release_notes
-
-
 .. User Guide
 
 .. toctree::
@@ -27,6 +18,15 @@
    :caption: Contributor Guide
 
    contributing
+
+
+.. Release Notes
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Release Notes
+
+   release_notes
 
 
 .. toctree::
