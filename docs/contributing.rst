@@ -31,7 +31,7 @@ Guidelines
 
 Python Support
 --------------
-SQLAlchemy Helpers supports Python 3.6 or greater. This is automatically enforced by the
+SQLAlchemy Helpers supports Python 3.7 or greater. This is automatically enforced by the
 continuous integration (CI) suite.
 
 

@@ -32,7 +32,7 @@ def test_sync_db(full_app, tmpdir):
             [sys.executable, "-m", "flask", "db", "sync"],
             check=True,
             stdout=subprocess.PIPE,
-            universal_newlines=True,
+            text=True,
         )
 
     result = syncdb()

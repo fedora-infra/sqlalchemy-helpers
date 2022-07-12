@@ -4,7 +4,6 @@ queue_rules:
       # Conditions to get out of the queue (= merged)
       - check-success=Checks
       - check-success=Documentation
-      - check-success=Unit tests (py36)
       - check-success=Unit tests (py37)
       - check-success=Unit tests (py38)
       - check-success=Unit tests (py39)
@@ -26,7 +25,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=Checks
       - check-success=Documentation
-      - check-success=Unit tests (py36)
       - check-success=Unit tests (py37)
       - check-success=Unit tests (py38)
       - check-success=Unit tests (py39)
@@ -46,7 +44,6 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - check-success=Checks
       - check-success=Documentation
-      - check-success=Unit tests (py36)
       - check-success=Unit tests (py37)
       - check-success=Unit tests (py38)
       - check-success=Unit tests (py39)
