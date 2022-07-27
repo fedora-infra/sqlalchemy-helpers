@@ -393,7 +393,7 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "liccheck"
-version = "0.7.1"
+version = "0.7.2"
 description = "Check python packages from requirement.txt and report issues"
 category = "dev"
 optional = false
@@ -962,7 +962,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.16.0"
+version = "20.16.1"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -1258,8 +1258,8 @@ jinja2 = [
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 liccheck = [
-    {file = "liccheck-0.7.1-py2.py3-none-any.whl", hash = "sha256:1b977eb20a7ad7457afa83f9a98589b5817762a516463247f1329179e8c7e3a1"},
-    {file = "liccheck-0.7.1.tar.gz", hash = "sha256:d4c18c5e1b203f3305d675b518e670a136bdceddb49b09d1efd06532336a8366"},
+    {file = "liccheck-0.7.2-py2.py3-none-any.whl", hash = "sha256:a50d212b943d119f61d822080e0b7bcefbae4c3b7cc7b54b47b465c191bfc8aa"},
+    {file = "liccheck-0.7.2.tar.gz", hash = "sha256:1961ee9bd9ae72c21f79da6db3a2048536f0912f4c5fde0f0c062d65ea5fbf0a"},
 ]
 mako = [
     {file = "Mako-1.2.1-py3-none-any.whl", hash = "sha256:df3921c3081b013c8a2d5ff03c18375651684921ae83fd12e64800b7da923257"},
@@ -1563,8 +1563,8 @@ urllib3 = [
     {file = "urllib3-1.26.11.tar.gz", hash = "sha256:ea6e8fb210b19d950fab93b60c9009226c63a28808bc8386e05301e25883ac0a"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.16.0-py2.py3-none-any.whl", hash = "sha256:2202dbc33c4f9aaa13289d244d64f2ade8b0169e88d0213b505099b384c5ae04"},
-    {file = "virtualenv-20.16.0.tar.gz", hash = "sha256:6cfedd21e7584124a1d1e8f3b6e74c0bf8aeea44d9884b6d2d7241de5361a73c"},
+    {file = "virtualenv-20.16.1-py2.py3-none-any.whl", hash = "sha256:bde925b831f36053a0fa7a468ca337dee26851c9f0bfc3d72a79d534703102d2"},
+    {file = "virtualenv-20.16.1.tar.gz", hash = "sha256:6cc42cad4d1a15c7ea5ed68e602eb49cc243b52d2eead36e577555cb56bf8705"},
 ]
 werkzeug = [
     {file = "Werkzeug-2.2.0-py3-none-any.whl", hash = "sha256:81806f8a5b35e6cb1b39a6f28dabf0e123f069c8596119a1a9a43838870016cd"},
