@@ -897,7 +897,7 @@ sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
 name = "stevedore"
-version = "3.5.1"
+version = "3.5.2"
 description = "Manage dynamic plugins for Python applications"
 category = "dev"
 optional = false
@@ -1543,8 +1543,8 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.42.tar.gz", hash = "sha256:177e41914c476ed1e1b77fd05966ea88c094053e17a85303c4ce007f88eff363"},
 ]
 stevedore = [
-    {file = "stevedore-3.5.1-py3-none-any.whl", hash = "sha256:df36e6c003264de286d6e589994552d3254052e7fc6a117753d87c471f06de2a"},
-    {file = "stevedore-3.5.1.tar.gz", hash = "sha256:1fecadf3d7805b940227f10e6a0140b202c9a24ba5c60cb539159046dc11e8d7"},
+    {file = "stevedore-3.5.2-py3-none-any.whl", hash = "sha256:fa2630e3d0ad3e22d4914aff2501445815b9a4467a6edc49387c667a38faf5bf"},
+    {file = "stevedore-3.5.2.tar.gz", hash = "sha256:cf99f41fc0d5a4f185ca4d3d42b03be9011b0a1ec1a4ea1a282be1b4b306dcc2"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
