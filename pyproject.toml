@@ -184,5 +184,6 @@ authorized_licenses = [
   "CC0 (copyright waived)",
   "Public Domain",
   "Public Domain <http://unlicense.org>",
+  "The Unlicense (Unlicense)",
   "Zope Public",
 ]
