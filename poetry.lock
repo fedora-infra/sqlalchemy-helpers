@@ -704,13 +704,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "liccheck"
-version = "0.8.3"
+version = "0.9.1"
 description = "Check python packages from requirement.txt and report issues"
 optional = false
 python-versions = ">=2.7"
 files = [
-    {file = "liccheck-0.8.3-py2.py3-none-any.whl", hash = "sha256:272ef1035c566824a3b9becf6a100f495de1492e33f11e88a21d5a3fee80436c"},
-    {file = "liccheck-0.8.3.tar.gz", hash = "sha256:317015ba05d36dfdf4a366de67b7b8658fc7caedccb5f019ed41dae55897de2b"},
+    {file = "liccheck-0.9.1-py2.py3-none-any.whl", hash = "sha256:0efbca7d765264225f334461cffb152dee13fdbbcdfcb3604f7d40fdc661f695"},
+    {file = "liccheck-0.9.1.tar.gz", hash = "sha256:d41f7ca763688cbb5691ed70ab53cf4608dd68a331f2d672f3cf8799e45e88dd"},
 ]
 
 [package.dependencies]
