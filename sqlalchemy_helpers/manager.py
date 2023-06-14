@@ -189,6 +189,7 @@ def get_or_create_property(Session):
     Install in on your base model class with:
     ``Base.get_or_create = get_or_create_property(Session)``
     """
+
     # https://docs.python.org/3/howto/descriptor.html
     class accessor:
         def __get__(self, obj, objtype=None):
