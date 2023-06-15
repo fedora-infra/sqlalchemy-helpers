@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: dnf install pre-commit
+        run: dnf install -y pre-commit
 
       - name: Run pre-commit checks
         run: pre-commit run --all-files
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: dnf install krb5-devel tox
+        run: dnf install -y krb5-devel tox
 
       - name: Build the docs
         run: tox -e docs
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: dnf install krb5-devel tox
+        run: dnf install -y krb5-devel tox
 
       - name: Run the tests
         run: tox -e ${{ matrix.pyver }}-${{ matrix.sqlaver }}
