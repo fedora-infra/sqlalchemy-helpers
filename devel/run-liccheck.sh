@@ -12,9 +12,9 @@ STRATEGY_TMPFILE=$(mktemp -t licceck-strategy-XXXXXX.ini)
 
 curl -o $STRATEGY_TMPFILE $STRATEGY_URL
 
-poetry export --dev --without-hashes -f requirements.txt -o $TMPFILE
+poetry export --with dev --without-hashes -f requirements.txt -o $TMPFILE
 
 # Use pip freeze instead of poetry when it fails
-#pip freeze --exclude-editable --isolated > $TMPFILE
+# poetry run pip freeze --exclude-editable --isolated > $TMPFILE
 
 poetry run liccheck -r $TMPFILE -s $STRATEGY_TMPFILE
