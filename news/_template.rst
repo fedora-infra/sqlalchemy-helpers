@@ -1,4 +1,3 @@
-
 {% macro reference(value) -%}
    {%- if value.startswith("PR") -%}
      :pr:`{{ value[2:] }}`
@@ -61,4 +60,3 @@ No significant changes.
 
 {% endif %}
 {% endfor %}
-
