@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: pyupgrade
         args:
-          - --py37-plus
+          - --py38-plus
 
   # https://black.readthedocs.io/en/stable/integrations/source_version_control.html
   - repo: https://github.com/psf/black
