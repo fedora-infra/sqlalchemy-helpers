@@ -54,7 +54,7 @@ class DatabaseManager:
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
-        Base.get_by_id = session_and_model_property(self.Session, get_by_id)
+        Base.get_by_pk = session_and_model_property(self.Session, get_by_pk)
         Base.get_one = session_and_model_property(self.Session, get_one)
         Base.get_or_create = session_and_model_property(self.Session, get_or_create)
         # Alembic
@@ -162,12 +162,12 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 # Query helpers
 
 
-def get_by_id(ident, *, session, model):
+def get_by_pk(pk, *, session, model):
     """Get a model instance using its primary key.
 
-    Example: ``user = get_by_id(session, User, 42)``
+    Example: ``user = get_by_pk(42, session=session, model=User)``
     """
-    return session.get(model, ident)
+    return session.get(model, pk)
 
 
 def get_one(session, model, **attrs):

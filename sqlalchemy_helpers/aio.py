@@ -64,7 +64,7 @@ class AsyncDatabaseManager(DatabaseManager):
         self.Session = sessionmaker(
             class_=AsyncSession, expire_on_commit=False, bind=self.engine, future=True
         )
-        Base.get_by_id = model_property(get_by_id)
+        Base.get_by_pk = model_property(get_by_pk)
         Base.get_one = model_property(get_one)
         Base.get_or_create = model_property(get_or_create)
 
@@ -161,12 +161,12 @@ class AsyncDatabaseManager(DatabaseManager):
 # Query helpers
 
 
-async def get_by_id(ident, *, session, model):
+async def get_by_pk(pk, *, session, model):
     """Get a model instance using its primary key.
 
-    Example: ``user = get_by_id(session, User, 42)``
+    Example: ``user = get_by_pk(42, session=session, model=User)``
     """
-    return await session.get(model, ident)
+    return await session.get(model, pk)
 
 
 async def get_one(session: AsyncSession, model, **attrs) -> "Base":

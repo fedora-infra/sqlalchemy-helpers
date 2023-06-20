@@ -42,7 +42,7 @@ first argument::
 
     user = await User.get_one(session, name="foo")
     # or
-    user = await User.get_by_id(session, 42)
+    user = await User.get_by_pk(session, 42)
     # or
     user, created = await User.get_or_create(session, name="foo")
 

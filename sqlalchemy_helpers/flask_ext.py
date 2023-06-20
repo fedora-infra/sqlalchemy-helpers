@@ -117,15 +117,15 @@ class DatabaseExtension:
 # View helpers
 
 
-def get_or_404(Model, ident, description=None):
+def get_or_404(Model, pk, description=None):
     """Like ``query.get`` but aborts with 404 if not found.
 
     Args:
         Model (manager.Base): a model class.
-        ident (int or str): the primary key of the desired record.
+        pk (int or str): the primary key of the desired record.
         description (str, optional): a message for the 404 error if not found.
     """
-    rv = Model.get_by_id(ident)
+    rv = Model.get_by_pk(pk)
     if rv is None:
         abort(404, description=description)
     return rv

@@ -70,7 +70,7 @@ For convenience, this function is also available as a model method::
 Other useful model methods are::
 
     user = User.get_one(name="foo")
-    user = User.get_by_id(42)
+    user = User.get_by_pk(42)
 
 
 Migrations

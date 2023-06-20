@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy_helpers.aio import (
     _async_from_sync_url,
     AsyncDatabaseManager,
-    get_by_id,
+    get_by_pk,
     get_or_create,
 )
 from sqlalchemy_helpers.manager import DatabaseStatus, exists_in_db, SyncResult
@@ -105,12 +105,12 @@ def test_async_from_sync_url(in_url, out_url_or_exc):
 # Query helpers
 
 
-async def test_async_get_by_id(manager, async_session):
+async def test_async_get_by_pk(manager, async_session):
     await manager.create()
     user = User(name="dummy")
     async_session.add(user)
     await async_session.commit()
-    user2 = await get_by_id(user.id, session=async_session, model=User)
+    user2 = await get_by_pk(user.id, session=async_session, model=User)
     assert isinstance(user2, User)
     assert user.id == user2.id
 

@@ -1,1 +1,1 @@
-Drop the query_property as it is considered legacy by SQLAlchemy. Instead, add :func:`get_by_id` and :func:`get_one` methods.
+Drop the query_property as it is considered legacy by SQLAlchemy. Instead, add :func:`get_by_pk` and :func:`get_one` methods.
