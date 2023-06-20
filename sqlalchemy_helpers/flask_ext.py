@@ -5,7 +5,7 @@ Flask integration of database management.
 import os
 
 import click
-from flask import _app_ctx_stack, abort, current_app, has_app_context
+from flask import abort, current_app, g, has_app_context
 from flask.cli import AppGroup
 from werkzeug.utils import find_modules, import_string
 
@@ -41,6 +41,8 @@ class DatabaseExtension:
     It cleans up database connections at the end of the requests, and creates the CLI endpoint to
     sync the database schema.
     """
+
+    _context_instance_name = "_sqlah_database_manager"
 
     def __init__(self, app=None):
         self.app = app
@@ -84,9 +86,8 @@ class DatabaseExtension:
 
     def teardown(self, exception):
         """Close the database connection at the end of each requests."""
-        ctx = _app_ctx_stack.top
-        if hasattr(ctx, "database_manager"):
-            ctx.database_manager.Session.remove()
+        if hasattr(g, self._context_instance_name):
+            getattr(g, self._context_instance_name).Session.remove()
 
     def before_request(self):
         """Prepare the database manager at the start of each request.
@@ -104,11 +105,13 @@ class DatabaseExtension:
     @property
     def manager(self):
         """DatabaseManager: the instance of the database manager."""
-        ctx = _app_ctx_stack.top
-        if ctx is not None:
-            if not hasattr(ctx, "database_manager"):
-                ctx.database_manager = _get_manager()
-            return ctx.database_manager
+        try:
+            if not hasattr(g, self._context_instance_name):
+                setattr(g, self._context_instance_name, _get_manager())
+            return getattr(g, self._context_instance_name)
+        except RuntimeError:
+            # RuntimeError: Working outside of application context.
+            return None
 
 
 # View helpers
