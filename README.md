@@ -31,6 +31,7 @@ Here's what sqlalchemy-helpers provides:
 - Optional Flask integration: you can use sqlalchemy-helpers outside of a Flask app and feel at home
 - The models created with sqlalchemy-helpers work both inside and outside the Flask application
   context
+- Support for asyncio
 
 This project has 100% code coverage and aims at reliably sharing some of the basic boilerplate
 between applications that use SQLAlchemy.

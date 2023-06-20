@@ -91,7 +91,7 @@ You can also find a couple helper functions for your migrations: :func:`is_sqlit
 Flask integration
 =================
 
-This projects provides a Flask integration layer for Flask >= 2.0.0. This is
+This project provides a Flask integration layer for Flask >= 2.0.0. This is
 how you can use it.
 
 Base setup

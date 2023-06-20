@@ -9,6 +9,7 @@
    :caption: User Guide
 
    user
+   async
 
 
 .. Contributor Guide

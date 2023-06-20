@@ -44,15 +44,13 @@ class DatabaseManager:
         alembic_location (str): a path to the alembic directory
 
     Attributes:
-        uri (str): the database URI
         alembic_cfg (alembic.config.Config): the Alembic configuration object
         engine (sqlalchemy.engine.Engine): the SQLAlchemy Engine instance
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
     def __init__(self, uri, alembic_location):
-        self.uri = uri
-        self.engine = create_engine(self.uri)
+        self.engine = create_engine(uri)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
@@ -62,7 +60,7 @@ class DatabaseManager:
         # Alembic
         self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
         self.alembic_cfg.set_main_option("script_location", alembic_location)
-        self.alembic_cfg.set_main_option("sqlalchemy.url", self.uri)
+        self.alembic_cfg.set_main_option("sqlalchemy.url", uri.replace("%", "%%"))
 
     def get_current_revision(self, session):
         """Get the current alembic database revision."""
@@ -79,9 +77,9 @@ class DatabaseManager:
         Base.metadata.create_all(bind=self.engine)
         command.stamp(self.alembic_cfg, "head")
 
-    def upgrade(self):
+    def upgrade(self, target="head"):
         """Upgrade the database schema."""
-        command.upgrade(self.alembic_cfg, "head")
+        command.upgrade(self.alembic_cfg, target)
 
     def drop(self):
         """Drop all the database tables."""
@@ -96,10 +94,13 @@ class DatabaseManager:
 
         Returns:
             DatabaseStatus member: see :class:`DatabaseStatus`."""
-        latest = self.get_latest_revision()
         current = self.get_current_revision(session=self.Session())
+        return self._compare_to_latest(current)
+
+    def _compare_to_latest(self, current):
         if current is None:
             return DatabaseStatus.NO_INFO
+        latest = self.get_latest_revision()
         if current != latest:
             return DatabaseStatus.UPGRADE_AVAILABLE
         return DatabaseStatus.UP_TO_DATE
@@ -202,6 +203,17 @@ def session_and_model_property(Session, func):
     class accessor:
         def __get__(self, obj, objtype=None):
             return partial(func, session=Session(), model=objtype)
+
+    return accessor()
+
+
+def model_property(func):
+    """Add a model property to call a function that uses the database model."""
+
+    # https://docs.python.org/3/howto/descriptor.html
+    class accessor:
+        def __get__(self, obj, objtype=None):
+            return partial(func, model=objtype)
 
     return accessor()
 

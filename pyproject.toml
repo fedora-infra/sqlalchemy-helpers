@@ -48,6 +48,7 @@ sphinxcontrib-napoleon = {version = "*", optional = true}
 pytest = "*"
 pytest-cov = "*"
 pytest-mock = "*"
+pytest-asyncio = "*"
 bandit = "*"
 black = "*"
 flake8 = "*"
@@ -58,6 +59,10 @@ sphinx = "*"
 pre-commit = "*"
 myst-parser = "*"
 towncrier = "*"
+aiosqlite = "*"
+psycopg2 = "*"
+asyncpg = "*"
+pydantic = "*"
 
 [tool.poetry.extras]
 flask = ["Flask"]
@@ -90,6 +95,7 @@ lines-after-imports = 2
 order-by-type = false
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 testpaths = [
     "tests",
 ]

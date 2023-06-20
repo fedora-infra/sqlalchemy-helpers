@@ -1,8 +1,13 @@
 import os
+import pathlib
+from shutil import copyfile
 
 import alembic
 import pytest
 from flask import Flask
+
+
+ROOT = pathlib.Path(__file__).parent.parent
 
 
 @pytest.fixture
@@ -20,8 +25,22 @@ def app(tmpdir):
 
 
 @pytest.fixture
+def async_enabled_env_script(app):
+    copyfile(
+        ROOT / "docs" / "aio-env.py.example",
+        pathlib.Path(app["alembic_dir"]) / "env.py",
+    )
+
+
+@pytest.fixture
 def session(manager):
     with manager.Session() as session:
+        yield session
+
+
+@pytest.fixture
+async def async_session(manager):
+    async with manager.Session() as session:
         yield session
 
 
