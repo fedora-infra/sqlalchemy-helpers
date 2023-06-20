@@ -59,7 +59,7 @@ def test_flask_ext_first_or_404(flask_app, flask_client):
 
     @flask_app.route("/user/<name>")
     def view(name):
-        user = first_or_404(User.query.filter_by(name=name), "no such user")
+        user = first_or_404(db.session.query(User).filter_by(name=name), "no such user")
         return jsonify(user.id)
 
     response = flask_client.get("/user/dummy")

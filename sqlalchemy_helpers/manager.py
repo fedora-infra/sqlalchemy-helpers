@@ -57,8 +57,9 @@ class DatabaseManager:
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
-        Base.query = self.Session.query_property()
-        Base.get_or_create = get_or_create_property(self.Session)
+        Base.get_by_id = session_and_model_property(self.Session, get_by_id)
+        Base.get_one = session_and_model_property(self.Session, get_one)
+        Base.get_or_create = session_and_model_property(self.Session, get_or_create)
         # Alembic
         self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
         self.alembic_cfg.set_main_option("script_location", alembic_location)
@@ -161,6 +162,22 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 # Query helpers
 
 
+def get_by_id(ident, *, session, model):
+    """Get a model instance using its primary key.
+
+    Example: ``user = get_by_id(session, User, 42)``
+    """
+    return session.get(model, ident)
+
+
+def get_one(session, model, **attrs):
+    """Get a model instance using filters.
+
+    Example: ``user = get_one(session, User, name="foo")``
+    """
+    return session.query(model).filter_by(**attrs).one()
+
+
 def get_or_create(session, model, **attrs):
     """Function like Django's ``get_or_create()`` method.
 
@@ -171,7 +188,7 @@ def get_or_create(session, model, **attrs):
     Example: ``user, created = get_or_create(session, User, name="foo")``
     """
     try:
-        return session.query(model).filter_by(**attrs).one(), False
+        return get_one(session=session, model=model, **attrs), False
     except NoResultFound:
         obj = model(**attrs)
         session.add(obj)
@@ -179,22 +196,13 @@ def get_or_create(session, model, **attrs):
         return obj, True
 
 
-def get_or_create_property(Session):
-    """Add a get_or_create property that behave like Django's.
-
-    Example: ``user, created = User.get_or_create(name="foo")``
-
-    See :func:`get_or_create` for return details.
-
-    Install in on your base model class with:
-    ``Base.get_or_create = get_or_create_property(Session)``
-    """
+def session_and_model_property(Session, func):
+    """Add a model property that uses the database session."""
 
     # https://docs.python.org/3/howto/descriptor.html
     class accessor:
         def __get__(self, obj, objtype=None):
-            session = Session()
-            return partial(get_or_create, session, objtype)
+            return partial(func, session=Session(), model=objtype)
 
     return accessor()
 

@@ -56,10 +56,6 @@ by calling::
     session = db.Session()
     user = session.query(User).filter_by(name="foo").one()
 
-The Database Manager will also setup a query property on you models, so you can make queries like::
-
-    user = User.query.filter_by(name="foo").one()
-
 This library also provides a :func:`get_or_create() <sqlalchemy_helpers.manager.get_or_create>`
 function, as popularized by Django::
 
@@ -70,6 +66,11 @@ function, as popularized by Django::
 For convenience, this function is also available as a model method::
 
     user, created = User.get_or_create(name="foo")
+
+Other useful model methods are::
+
+    user = User.get_one(name="foo")
+    user = User.get_by_id(42)
 
 
 Migrations

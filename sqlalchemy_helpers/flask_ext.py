@@ -92,7 +92,7 @@ class DatabaseExtension:
     def before_request(self):
         """Prepare the database manager at the start of each request.
 
-        This is necessary to allow access to the ``Model.query`` property.
+        This is necessary to allow access to the ``Model.get_*`` methods.
         """
         # Just create the manager
         self.manager
@@ -125,7 +125,7 @@ def get_or_404(Model, ident, description=None):
         ident (int or str): the primary key of the desired record.
         description (str, optional): a message for the 404 error if not found.
     """
-    rv = Model.query.get(ident)
+    rv = Model.get_by_id(ident)
     if rv is None:
         abort(404, description=description)
     return rv
