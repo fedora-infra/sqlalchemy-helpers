@@ -32,6 +32,19 @@ jobs:
       - name: Run pre-commit checks
         run: pre-commit run --all-files
 
+  licenses:
+    name: Licenses
+    runs-on: ubuntu-latest
+    container: fedorapython/fedora-python-tox:latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: dnf install -y krb5-devel tox
+
+      - name: Run the licenses check
+        run: tox -e licenses
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
