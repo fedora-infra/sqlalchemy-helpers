@@ -11,26 +11,14 @@ repos:
     rev: 23.3.0
     hooks:
       - id: black
-        args: ["--check", "--diff"]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
+  # Ruff
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.0.272
     hooks:
-      - id: flake8
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: ["-c", "--df"]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ["-ll", "-x", "*/tests/*"]
-        # All files in one go to get a single report
-        require_serial: true
+      - id: ruff
+        args: ["--diff"]
 
 #  - repo: https://github.com/myint/rstcheck
 #    rev: 3f92957

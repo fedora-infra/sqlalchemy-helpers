@@ -6,7 +6,7 @@ Attributes:
     __version__ (str): this package's version.
 """
 
-from .manager import (  # noqa: F401
+from .manager import (
     Base,
     DatabaseManager,
     exists_in_db,

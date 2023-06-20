@@ -17,9 +17,8 @@ from alembic import command
 from alembic.config import Config as AlembicConfig
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy import event as sa_event
-from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound

@@ -95,7 +95,7 @@ class DatabaseExtension:
         This is necessary to allow access to the ``Model.get_*`` methods.
         """
         # Just create the manager
-        self.manager
+        self.manager  # noqa: B018
 
     @property
     def session(self):
