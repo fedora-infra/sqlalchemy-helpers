@@ -51,6 +51,7 @@ class AsyncDatabaseManager(DatabaseManager):
     Args:
         uri (str): the database URI
         alembic_location (str): a path to the alembic directory
+        engine_args (dict): additional arguments passed to ``create_async_engine``
 
     Attributes:
         alembic_cfg (alembic.config.Config): the Alembic configuration object
@@ -58,15 +59,28 @@ class AsyncDatabaseManager(DatabaseManager):
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location):
-        super().__init__(uri, alembic_location)
-        self.engine = create_async_engine(url=_async_from_sync_url(uri))
+    def __init__(self, uri, alembic_location, engine_args=None):
+        super().__init__(uri, alembic_location, engine_args=engine_args)
         self.Session = sessionmaker(
             class_=AsyncSession, expire_on_commit=False, bind=self.engine, future=True
         )
         Base.get_by_pk = model_property(get_by_pk)
         Base.get_one = model_property(get_one)
         Base.get_or_create = model_property(get_or_create)
+
+    def _make_engine(self, uri, engine_args):
+        """Create the SQLAlchemy engine.
+
+        Args:
+            uri (str): the database URI
+            engine_args (dict or None): additional arguments passed to ``create_async_engine``
+
+        Returns:
+            sqlalchemy.ext.asyncio.AsyncEngine: the SQLAlchemy engine
+        """
+        engine_args = engine_args or {}
+        engine_args["url"] = _async_from_sync_url(uri)
+        return create_async_engine(**engine_args)
 
     def configured_connection(self, f):
         @wraps(f)

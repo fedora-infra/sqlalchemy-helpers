@@ -1,8 +1,10 @@
 import asyncio
 from functools import partial
+from unittest import mock
 
 import alembic
 import pytest
+from sqlalchemy.engine import make_url
 
 from sqlalchemy_helpers.aio import (
     _async_from_sync_url,
@@ -16,8 +18,17 @@ from .models import User
 
 
 @pytest.fixture
-def manager(app, async_enabled_env_script):
-    return AsyncDatabaseManager(app["db_uri"], app["alembic_dir"])
+async def manager(app, async_enabled_env_script):
+    yield AsyncDatabaseManager(app["db_uri"], app["alembic_dir"])
+
+
+def test_manager_engine_args(app, monkeypatch):
+    create_engine = mock.Mock()
+    monkeypatch.setattr("sqlalchemy_helpers.aio.create_async_engine", create_engine)
+    AsyncDatabaseManager(app["db_uri"], app["alembic_dir"], {"foo": "bar"})
+    create_engine.assert_called_once_with(
+        url=make_url(app["db_uri"]).set(drivername="sqlite+aiosqlite"), foo="bar"
+    )
 
 
 async def test_manager_create(manager):

@@ -43,8 +43,11 @@ Most of the integration work in sqlalchemy-helpers is done via the
     db = DatabaseManager("sqlite:///", "path/to/alembic")
 
 The first argument is the database URI, the second argument is the path to the alembic directory is
-where Alembic's ``env.py``.resides. You can call the Database Manager's functions to get information
-about your database or to migrate its schema.
+where Alembic's ``env.py`` resides. The third argument is a dictionary of additional keyword
+arguments that will be passed to the ``create_engine`` factory along with the URI.
+
+You can call the Database Manager's functions to get information about your database or to migrate
+its schema.
 
 Making queries
 --------------

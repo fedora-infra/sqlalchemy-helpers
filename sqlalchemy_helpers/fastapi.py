@@ -17,7 +17,9 @@ def manager_from_config(db_settings):
         db_settings = db_settings.dict()
     uri = str(db_settings["sqlalchemy"]["url"])
     alembic_location = str(db_settings["alembic"]["migrations_path"])
-    manager = AsyncDatabaseManager(uri, alembic_location)
+    manager = AsyncDatabaseManager(
+        uri, alembic_location, engine_args=db_settings["sqlalchemy"]
+    )
     return manager
 
 

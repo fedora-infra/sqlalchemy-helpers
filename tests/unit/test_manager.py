@@ -1,3 +1,5 @@
+from unittest import mock
+
 import alembic
 import pytest
 
@@ -16,6 +18,13 @@ from .models import User
 @pytest.fixture
 def manager(app):
     return DatabaseManager(app["db_uri"], app["alembic_dir"])
+
+
+def test_manager_engine_args(app, monkeypatch):
+    create_engine = mock.Mock()
+    monkeypatch.setattr("sqlalchemy_helpers.manager.create_engine", create_engine)
+    DatabaseManager(app["db_uri"], app["alembic_dir"], {"foo": "bar"})
+    create_engine.assert_called_once_with(url=app["db_uri"], foo="bar")
 
 
 def test_manager_no_revision(manager):

@@ -42,6 +42,7 @@ class DatabaseManager:
     Args:
         uri (str): the database URI
         alembic_location (str): a path to the alembic directory
+        engine_args (dict): additional arguments passed to ``create_engine``
 
     Attributes:
         alembic_cfg (alembic.config.Config): the Alembic configuration object
@@ -49,8 +50,8 @@ class DatabaseManager:
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location):
-        self.engine = create_engine(uri)
+    def __init__(self, uri, alembic_location, engine_args=None):
+        self.engine = self._make_engine(uri, engine_args)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
@@ -61,6 +62,20 @@ class DatabaseManager:
         self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
         self.alembic_cfg.set_main_option("script_location", alembic_location)
         self.alembic_cfg.set_main_option("sqlalchemy.url", uri.replace("%", "%%"))
+
+    def _make_engine(self, uri, engine_args):
+        """Create the SQLAlchemy engine.
+
+        Args:
+            uri (str): the database URI
+            engine_args (dict or None): additional arguments passed to ``create_engine``
+
+        Returns:
+            sqlalchemy.Engine: the SQLAlchemy engine
+        """
+        engine_args = engine_args or {}
+        engine_args["url"] = uri
+        return create_engine(**engine_args)
 
     def get_current_revision(self, session):
         """Get the current alembic database revision."""
