@@ -80,7 +80,7 @@ The manager can create and update your database. It also has a :meth:`sync()
 <sqlalchemy_helpers.manager.DatabaseManager.sync>` method that will create the database if it does
 not exist or update it if it is not at the latest schema revision. The :meth:`sync()
 <sqlalchemy_helpers.manager.DatabaseManager.sync>` call will return the result of the operation as a
-member of the :class:`SyncResult <sqlalchemy_helpers.manager.SyncResult>` enum so you can react
+member of the :class:`SyncResult <sqlalchemy_helpers.SyncResult>` enum so you can react
 accordingly.
 
 You can also find a couple helper functions for your migrations: :func:`is_sqlite()
@@ -245,7 +245,7 @@ OpenShift/Kubernetes. If you're using `flask-healthz`_ you can write a pretty cl
 function such as::
 
     from flask_healthz import HealthError
-    from sqlalchemy_helpers.manager import DatabaseStatus
+    from sqlalchemy_helpers import DatabaseStatus
     from .database import db
 
     def liveness():
