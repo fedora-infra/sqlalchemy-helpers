@@ -26,18 +26,18 @@ Here's what sqlalchemy-helpers provides:
   - migration helper functions such as `is_sqlite()` or `exists_in_db()`
 - SQLAlchemy naming convention for easier schema upgrades
 - Automatically activate foreign keys on SQLite
-- Enablement of the `query` property on your models
+- Addition of some useful query properties on your models
 - A query function `get_or_create()` that you can call directly or use on your model classes
 - Optional Flask integration: you can use sqlalchemy-helpers outside of a Flask app and feel at home
 - The models created with sqlalchemy-helpers work both inside and outside the Flask application
   context
-- Support for asyncio
+- Support for asyncio and FastAPI.
 
 This project has 100% code coverage and aims at reliably sharing some of the basic boilerplate
 between applications that use SQLAlchemy.
 
 Check out the [User Guide](https://sqlalchemy-helpers.readthedocs.io/en/latest/user.html) to learn
-how to use it in your application, with or without Flask.
+how to use it in your application, with or without a web framework.
 
 ## FAQ
 
