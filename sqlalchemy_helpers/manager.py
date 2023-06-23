@@ -94,7 +94,8 @@ class DatabaseManager:
 
         Returns:
             DatabaseStatus member: see :class:`DatabaseStatus`."""
-        current = self.get_current_revision(session=self.Session())
+        with self.Session() as session:
+            current = self.get_current_revision(session=session)
         return self._compare_to_latest(current)
 
     def _compare_to_latest(self, current):

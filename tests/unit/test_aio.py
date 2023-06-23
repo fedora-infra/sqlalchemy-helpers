@@ -69,9 +69,9 @@ async def test_manager_drop(manager):
     )
     await manager.create()
     await manager.drop()
-    async with manager.Session() as session:
-        conn = await session.connection()
+    async with manager.engine.connect() as conn:
         assert not (await conn.run_sync(exists_in_db, "users"))
+    async with manager.Session() as session:
         assert (await manager.get_current_revision(session)) is None
 
 

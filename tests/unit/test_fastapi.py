@@ -69,7 +69,8 @@ async def test_fastapi_syncdb(settings, manager, monkeypatch):
     )
     async with manager.engine.connect() as conn:
         assert not (await conn.run_sync(exists_in_db, "users"))
-    assert (await manager.get_current_revision(manager.Session())) is None
+    async with manager.Session() as session:
+        assert (await manager.get_current_revision(session)) is None
 
     @click.command()
     def syncdb_cmd():
@@ -82,7 +83,8 @@ async def test_fastapi_syncdb(settings, manager, monkeypatch):
     assert result.exit_code == 0
     assert result.exception is None
 
-    assert (await manager.get_current_revision(manager.Session())) is not None
+    async with manager.Session() as session:
+        assert (await manager.get_current_revision(session)) is not None
     async with manager.engine.connect() as conn:
         assert await conn.run_sync(exists_in_db, "users")
     assert "Database created." in result.output

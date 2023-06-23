@@ -121,7 +121,6 @@ class AsyncDatabaseManager(DatabaseManager):
 
         @self.configured_connection
         def _run_drop(connection):
-            print(Base.metadata)
             Base.metadata.drop_all(connection)
             # Also drop the Alembic version table
             alembic_context = MigrationContext.configure(connection)
@@ -135,7 +134,8 @@ class AsyncDatabaseManager(DatabaseManager):
 
         Returns:
             DatabaseStatus member: see :class:`DatabaseStatus`."""
-        current = await self.get_current_revision(session=self.Session())
+        async with self.Session() as session:
+            current = await self.get_current_revision(session=session)
         return self._compare_to_latest(current)
 
     async def sync(self):
