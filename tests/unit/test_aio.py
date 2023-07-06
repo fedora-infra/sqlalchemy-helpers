@@ -102,7 +102,7 @@ async def test_manager_get_current_revision_no_rev(manager):
         ("sqlite+foo:///fmn.db", "sqlite+aiosqlite:///fmn.db"),
         ("postgresql:///fmn", "postgresql+asyncpg:///fmn"),
         ("postgresql+pg8000:///fmn", "postgresql+asyncpg:///fmn"),
-        ("mysql:///fmn", "postgresql+aiomysql:///fmn"),
+        ("mysql:///fmn", "mysql+aiomysql:///fmn"),
         ("unknowndb:///fmn", ValueError),
     ),
 )

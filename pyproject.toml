@@ -63,6 +63,7 @@ aiosqlite = "*"
 psycopg2 = "*"
 asyncpg = "*"
 pydantic = "*"
+pydantic-settings = "*"
 
 [tool.poetry.extras]
 flask = ["Flask"]

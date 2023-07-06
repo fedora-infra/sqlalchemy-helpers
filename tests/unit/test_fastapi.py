@@ -6,7 +6,8 @@ import alembic
 import click
 import pytest
 from click.testing import CliRunner
-from pydantic import BaseModel, BaseSettings, DirectoryPath, stricturl
+from pydantic import AnyUrl, BaseModel, ConfigDict, DirectoryPath
+from pydantic_settings import BaseSettings
 
 from sqlalchemy_helpers.aio import AsyncDatabaseManager
 from sqlalchemy_helpers.fastapi import make_db_session, manager_from_config, syncdb
@@ -23,11 +24,10 @@ def manager(app, async_enabled_env_script):
 @pytest.fixture
 def settings(app):
     class SQLAlchemyModel(BaseModel):
-        url: stricturl(tld_required=False, host_required=False) = "sqlite:///:memory:"
+        url: AnyUrl = AnyUrl("sqlite:///:memory:")
         echo: bool = False
 
-        class Config:
-            extra = "allow"
+        model_config = ConfigDict(extra="allow")
 
     class AlembicModel(BaseModel):
         migrations_path: DirectoryPath = app["alembic_dir"]
@@ -43,7 +43,7 @@ def settings(app):
 
 
 def test_manager_from_config(app, settings):
-    settings.database.sqlalchemy.url = "postgresql://db.example.com/dbname"
+    settings.database.sqlalchemy.url = AnyUrl("postgresql://db.example.com/dbname")
     manager = manager_from_config(settings.database)
     assert manager.alembic_cfg.get_main_option("script_location") == app["alembic_dir"]
     assert (
@@ -54,7 +54,7 @@ def test_manager_from_config(app, settings):
 
 
 def test_manager_from_config_dict(app, settings):
-    manager = manager_from_config(settings.database.dict())
+    manager = manager_from_config(settings.database.model_dump())
     assert manager.alembic_cfg.get_main_option("script_location") == app["alembic_dir"]
 
 

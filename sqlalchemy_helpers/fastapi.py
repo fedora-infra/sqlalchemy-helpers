@@ -14,7 +14,10 @@ from .manager import SyncResult
 def manager_from_config(db_settings):
     """Get the database manager using the Flask app's configuration."""
     if not isinstance(db_settings, dict):
-        db_settings = db_settings.dict()
+        try:
+            db_settings = db_settings.model_dump()  # Pydantic Settings >=2.0
+        except AttributeError:  # pragma: no cover
+            db_settings = db_settings.dict()  # Pydantic <2.0
     uri = str(db_settings["sqlalchemy"]["url"])
     alembic_location = str(db_settings["alembic"]["migrations_path"])
     manager = AsyncDatabaseManager(
