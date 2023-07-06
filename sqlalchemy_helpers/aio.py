@@ -39,6 +39,8 @@ def _async_from_sync_url(url: Union[URL, str]) -> URL:
         driver = "aiosqlite"
     elif dialect == "postgresql":
         driver = "asyncpg"
+    elif dialect == "mysql":
+        driver = "aiomysql"
     else:
         raise ValueError(f"I don't know the asyncio driver for dialect {dialect}")
 
