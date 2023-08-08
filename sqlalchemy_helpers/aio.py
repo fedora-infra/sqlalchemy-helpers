@@ -102,7 +102,7 @@ class AsyncDatabaseManager(DatabaseManager):
         )
         try:
             result = await session.execute(alembic_context._version.select())
-        except sa_exc.OperationalError:
+        except sa_exc.DatabaseError:
             # Table alembic_version does not exist yet
             return None
         current_versions = [row[0] for row in result]
