@@ -101,8 +101,9 @@ class DatabaseManager:
         Base.metadata.drop_all(bind=self.engine)
         # Also drop the Alembic version table
         with self.engine.connect() as connection:
-            alembic_context = MigrationContext.configure(connection)
-            alembic_context._version.drop(bind=connection)
+            with connection.begin():
+                alembic_context = MigrationContext.configure(connection)
+                alembic_context._version.drop(bind=connection)
 
     def get_status(self):
         """Get the status of the database.
