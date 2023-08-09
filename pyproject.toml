@@ -137,11 +137,6 @@ all_bullets = true
   showcontent = true
 
   [[tool.towncrier.type]]
-  directory = "dependency"
-  name = "Dependency Changes"
-  showcontent = true
-
-  [[tool.towncrier.type]]
   directory = "feature"
   name = "Features"
   showcontent = true
@@ -159,6 +154,11 @@ all_bullets = true
   [[tool.towncrier.type]]
   directory = "docs"
   name = "Documentation Improvements"
+  showcontent = true
+
+  [[tool.towncrier.type]]
+  directory = "dependency"
+  name = "Dependency Changes"
   showcontent = true
 
   [[tool.towncrier.type]]
