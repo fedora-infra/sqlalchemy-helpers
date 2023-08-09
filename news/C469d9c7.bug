@@ -1,1 +1,0 @@
-The psycopg driver raises a ProgrammingError where sqlite raises an OperationalError

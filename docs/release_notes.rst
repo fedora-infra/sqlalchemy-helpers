@@ -4,6 +4,30 @@ Release notes
 
 .. towncrier release notes start
 
+v0.12.0
+=======
+
+Released on 2023-08-09.
+This is a feature release that adds MySQL/MariaDB support in the async mode.
+
+Features
+^^^^^^^^
+
+* Add support for MySQL/MariaDB in the async mode (:issue:`325`).
+
+Bug Fixes
+^^^^^^^^^
+
+* The psycopg driver raises a ProgrammingError where sqlite raises an
+  OperationalError (:commit:`469d9c7`).
+
+Dependency Changes
+^^^^^^^^^^^^^^^^^^
+
+* Fix a minor compatibility issue with SQLAlchemy 2.0 (:commit:`3f379e2`).
+* Support Pydantic 2.0+ and Pydantic Settings (:pr:`323`).
+
+
 v0.11.0
 =======
 
