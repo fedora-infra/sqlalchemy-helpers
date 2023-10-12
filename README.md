@@ -10,7 +10,7 @@ You can install it [from PyPI](https://pypi.org/project/sqlalchemy-helpers/).
 
 ![PyPI](https://img.shields.io/pypi/v/sqlalchemy-helpers.svg)
 ![Supported Python versions](https://img.shields.io/pypi/pyversions/sqlalchemy-helpers.svg)
-![Tests status](https://github.com/fedora-infra/sqlalchemy-helpers/actions/workflows/tests.yml/badge.svg?branch=develop)
+![Build status](https://github.com/fedora-infra/sqlalchemy-helpers/actions/workflows/main.yml/badge.svg?branch=develop)
 ![Documentation](https://readthedocs.org/projects/sqlalchemy-helpers/badge/?version=latest)
 
 ## Features
