@@ -124,10 +124,10 @@ omit = [
 package = "sqlalchemy_helpers"
 filename = "docs/release_notes.rst"
 directory = "news/"
-title_format = "v{version}"
 issue_format = "{issue}"
-template = "news/_template.rst"
-underlines = "=^-"
+template = "news/_template.md"
+title_format = "## Version [{version}](https://github.com/fedora-infra/sqlalchemy-helpers/tree/{version})"
+underlines = ["", "", ""]
 wrap = true
 all_bullets = true
 
