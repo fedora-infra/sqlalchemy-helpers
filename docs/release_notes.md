@@ -6,10 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 This project uses [*towncrier*](https://towncrier.readthedocs.io/) and the changes for the upcoming release can be found in <https://github.com/fedora-infra/sqlalchemy-helpers/tree/develop/news/>.
 
-
 <!-- towncrier release notes start -->
 
-## v0.12.0
+## Version [0.12.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/0.12.1)
+
+Released on 2023-10-12. This is a minor release that adds docs and development improvements
+
+### Development Improvements
+
+- Automatically publish to PyPI and release
+  ([c572657](https://github.com/fedora-infra/sqlalchemy-helpers/commits/c572657)).
+
+### Documentation Improvements
+
+- Release notes: show dependency changes further down the page
+  ([499ec7a](https://github.com/fedora-infra/sqlalchemy-helpers/commits/499ec7a)).
+- Convert the release notes to Markdown
+  ([841e1fb](https://github.com/fedora-infra/sqlalchemy-helpers/commits/841e1fb)).
+
+
+## Version 0.12.0
 
 Released on 2023-08-09.
 This is a feature release that adds MySQL/MariaDB support in the async mode.
@@ -29,7 +45,7 @@ This is a feature release that adds MySQL/MariaDB support in the async mode.
 * Support Pydantic 2.0+ and Pydantic Settings ([#323](https://github.com/fedora-infra/sqlalchemy-helpers/issues/323)).
 
 
-## v0.11.0
+## Version 0.11.0
 
 Released on 2023-06-23.
 This is a major release that adds AsyncIO and FastAPI support.
