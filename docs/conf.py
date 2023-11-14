@@ -97,8 +97,10 @@ source_suffix = {
 
 # -- Options for intersphinx extension ---------------------------------------
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
+}
 
 extlinks = {
     "commit": ("https://github.com/fedora-infra/sqlalchemy-helpers/commit/%s", "%s"),

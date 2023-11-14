@@ -5,18 +5,22 @@ Flask integration of database management.
 import os
 
 import click
-from flask import abort, current_app, g, has_app_context
+from flask import abort, current_app, has_app_context
 from flask.cli import AppGroup
 from werkzeug.utils import find_modules, import_string
 
 from .manager import DatabaseManager, SyncResult
 
 
-def _get_manager():
+def _get_manager(engine_args=None, app=None):
     """Get the database manager using the Flask app's configuration."""
-    uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
-    alembic_location = current_app.config["DB_ALEMBIC_LOCATION"]
-    manager = DatabaseManager(uri, alembic_location)
+    app = app or current_app
+    uri = app.config["SQLALCHEMY_DATABASE_URI"]
+    alembic_location = app.config["DB_ALEMBIC_LOCATION"]
+    base_model = app.extensions[DatabaseExtension._app_base_model_name]
+    manager = DatabaseManager(
+        uri, alembic_location, engine_args=engine_args, base_model=base_model
+    )
     return manager
 
 
@@ -42,19 +46,22 @@ class DatabaseExtension:
     sync the database schema.
     """
 
-    _context_instance_name = "_sqlah_database_manager"
+    _app_manager_name = "_sqlah_database_manager"
+    _app_base_model_name = "_sqlah_base_model"
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, base_model=None):
         self.app = app
+        self._base_model = base_model
         if app is not None:
-            self.init_app(app)
+            self.init_app(app, base_model=self._base_model)
 
-    def init_app(self, app):
+    def init_app(self, app, base_model=None):
         """Initialize the extention on the provided Flask app
 
         Args:
             app (flask.Flask): the Flask application.
         """
+        base_model = base_model or self._base_model
         # Set config defaults
         app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
         app.config.setdefault(
@@ -68,6 +75,9 @@ class DatabaseExtension:
         app.before_request(self.before_request)
         # Disconnect hook
         app.teardown_appcontext(self.teardown)
+        # Store the base_model
+        app.extensions[self._app_base_model_name] = base_model
+
         # CLI
         db_cli = AppGroup("db", help="Database operations.")
         db_cli.command("sync", help="Create or migrate the database.")(_syncdb)
@@ -86,8 +96,8 @@ class DatabaseExtension:
 
     def teardown(self, exception):
         """Close the database connection at the end of each requests."""
-        if hasattr(g, self._context_instance_name):
-            getattr(g, self._context_instance_name).Session.remove()
+        if self._app_manager_name in current_app.extensions:
+            current_app.extensions[self._app_manager_name].Session.remove()
 
     def before_request(self):
         """Prepare the database manager at the start of each request.
@@ -106,9 +116,10 @@ class DatabaseExtension:
     def manager(self):
         """DatabaseManager: the instance of the database manager."""
         try:
-            if not hasattr(g, self._context_instance_name):
-                setattr(g, self._context_instance_name, _get_manager())
-            return getattr(g, self._context_instance_name)
+            if self._app_manager_name not in current_app.extensions:
+                current_app.extensions[self._app_manager_name] = _get_manager()
+
+            return current_app.extensions[self._app_manager_name]
         except RuntimeError:
             # RuntimeError: Working outside of application context.
             return None

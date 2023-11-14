@@ -32,6 +32,15 @@ Example::
 
 As you can see, it is very similar to what you would do with plain SQLAlchemy.
 
+If you need to, you can have a different base class for your models, using the
+:func:`sqlalchemy_helpers.manager.get_base` function::
+
+    from sqlalchemy_helpers import get_base
+
+    Base = get_base(cls=CustomBase)
+
+All the arguments passed to the :func:`~sqlalchemy_helpers.manager.get_base` function will be
+transferred to the :func:`sqlalchemy.orm.declarative_base` function.
 
 The database manager
 --------------------
@@ -44,7 +53,8 @@ Most of the integration work in sqlalchemy-helpers is done via the
 
 The first argument is the database URI, the second argument is the path to the alembic directory is
 where Alembic's ``env.py`` resides. The third argument is a dictionary of additional keyword
-arguments that will be passed to the ``create_engine`` factory along with the URI.
+arguments that will be passed to the ``create_engine`` factory along with the URI. The fourth
+argument is the custom base class, if you have defined any (it is optional).
 
 You can call the Database Manager's functions to get information about your database or to migrate
 its schema.
@@ -131,6 +141,11 @@ In the application factory, import the instance and call its :class:`init_app()
         db.init_app(app)
 
         return app
+
+If you need to define a custom base class, you can pass it to the extension using the
+``base_model`` argument of the
+:meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.__init__` constructor or the
+:meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.init_app` function.
 
 
 Models

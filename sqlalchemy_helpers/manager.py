@@ -24,14 +24,21 @@ from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 
-Base = declarative_base()
-Base.metadata.naming_convention = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s",
-}
+def get_base(*args, **kwargs):
+    """A wrapper for :func:`declarative_base`."""
+    base = declarative_base(*args, **kwargs)
+    base.metadata.naming_convention = {
+        "ix": "ix_%(column_0_label)s",
+        "uq": "uq_%(table_name)s_%(column_0_name)s",
+        "ck": "ck_%(table_name)s_%(constraint_name)s",
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        "pk": "pk_%(table_name)s",
+    }
+    return base
+
+
+Base = get_base()
+
 
 _log = logging.getLogger(__name__)
 
@@ -50,14 +57,17 @@ class DatabaseManager:
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, engine_args=None):
+    def __init__(self, uri, alembic_location, engine_args=None, base_model=None):
         self.engine = self._make_engine(uri, engine_args)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
-        Base.get_by_pk = session_and_model_property(self.Session, get_by_pk)
-        Base.get_one = session_and_model_property(self.Session, get_one)
-        Base.get_or_create = session_and_model_property(self.Session, get_or_create)
+        self._base_model = base_model or Base
+        self._base_model.get_by_pk = session_and_model_property(self.Session, get_by_pk)
+        self._base_model.get_one = session_and_model_property(self.Session, get_one)
+        self._base_model.get_or_create = session_and_model_property(
+            self.Session, get_or_create
+        )
         # Alembic
         self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
         self.alembic_cfg.set_main_option("script_location", alembic_location)
@@ -89,7 +99,7 @@ class DatabaseManager:
 
     def create(self):
         """Create the database tables."""
-        Base.metadata.create_all(bind=self.engine)
+        self._base_model.metadata.create_all(bind=self.engine)
         command.stamp(self.alembic_cfg, "head")
 
     def upgrade(self, target="head"):
@@ -98,7 +108,7 @@ class DatabaseManager:
 
     def drop(self):
         """Drop all the database tables."""
-        Base.metadata.drop_all(bind=self.engine)
+        self._base_model.metadata.drop_all(bind=self.engine)
         # Also drop the Alembic version table
         with self.engine.connect() as connection:
             with connection.begin():

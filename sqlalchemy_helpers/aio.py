@@ -61,14 +61,15 @@ class AsyncDatabaseManager(DatabaseManager):
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, engine_args=None):
+    def __init__(self, uri, alembic_location, engine_args=None, base_model=None):
         super().__init__(uri, alembic_location, engine_args=engine_args)
         self.Session = sessionmaker(
             class_=AsyncSession, expire_on_commit=False, bind=self.engine, future=True
         )
-        Base.get_by_pk = model_property(get_by_pk)
-        Base.get_one = model_property(get_one)
-        Base.get_or_create = model_property(get_or_create)
+        self._base_model = base_model or Base
+        self._base_model.get_by_pk = model_property(get_by_pk)
+        self._base_model.get_one = model_property(get_one)
+        self._base_model.get_or_create = model_property(get_or_create)
 
     def _make_engine(self, uri, engine_args):
         """Create the SQLAlchemy engine.
@@ -116,7 +117,7 @@ class AsyncDatabaseManager(DatabaseManager):
 
         @self.configured_connection
         def _run_stamp(connection):
-            Base.metadata.create_all(connection)
+            self._base_model.metadata.create_all(connection)
             command.stamp(self.alembic_cfg, "head")
 
         async with self.engine.begin() as conn:
@@ -137,7 +138,7 @@ class AsyncDatabaseManager(DatabaseManager):
 
         @self.configured_connection
         def _run_drop(connection):
-            Base.metadata.drop_all(connection)
+            self._base_model.metadata.drop_all(connection)
             # Also drop the Alembic version table
             alembic_context = MigrationContext.configure(connection)
             alembic_context._version.drop(bind=connection)

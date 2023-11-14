@@ -11,6 +11,7 @@ from .manager import (
     DatabaseManager,
     DatabaseStatus,
     exists_in_db,
+    get_base,
     get_or_create,
     is_sqlite,
     SyncResult,
