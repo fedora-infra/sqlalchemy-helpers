@@ -8,7 +8,14 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
-- Allow customization of the model base class.
+## Version [0.13.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/0.13.0)
+
+Released on 2023-11-16. This is a feature release that adds customization of the model base class.
+
+### Features
+
+- Allow customization of the model base class
+  ([bc26cd3](https://github.com/fedora-infra/sqlalchemy-helpers/commits/bc26cd3)).
 
 ## Version [0.12.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/0.12.1)
 
