@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          dnf install -y pre-commit git libpq-devel
+          dnf install -y git libpq-devel
           pip install poetry>=1.2
 
       - name: Mark the working directory as safe for Git
@@ -25,7 +25,7 @@ jobs:
         run: poetry install
 
       - name: Run pre-commit checks
-        run: pre-commit run --all-files
+        run: poetry run pre-commit run --all-files
 
 
   licenses:
