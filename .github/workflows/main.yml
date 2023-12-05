@@ -36,7 +36,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: dnf install -y krb5-devel tox libpq-devel
+        run: |
+          dnf install -y krb5-devel tox libpq-devel
+          pip install poetry>=1.2
 
       - name: Run the licenses check
         run: tox -e licenses
@@ -50,7 +52,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: dnf install -y krb5-devel tox libpq-devel
+        run: |
+          dnf install -y krb5-devel tox libpq-devel
+          pip install poetry>=1.2
 
       - name: Build the docs
         run: tox -e docs
@@ -70,7 +74,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: dnf install -y krb5-devel tox libpq-devel
+        run: |
+          dnf install -y krb5-devel tox libpq-devel
+          pip install poetry>=1.2
 
       - name: Run the tests
         run: tox -e ${{ matrix.pyver }}-${{ matrix.sqlaver }}
