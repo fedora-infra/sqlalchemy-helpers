@@ -1,10 +1,15 @@
 import os
 import pathlib
+import sys
+from contextlib import suppress
+from importlib import import_module
 from shutil import copyfile
 
 import alembic
 import pytest
 from flask import Flask
+
+from sqlalchemy_helpers.manager import Base
 
 
 ROOT = pathlib.Path(__file__).parent.parent
@@ -16,6 +21,13 @@ def app(tmpdir):
     alembic_dir = os.path.join(tmpdir, "alembic")
     alembic_cfg = alembic.config.Config(os.path.join(alembic_dir, "alembic.ini"))
     alembic.command.init(alembic_cfg, alembic_dir)
+
+    if "users" not in Base.metadata.tables:
+        # Reimport the test models, the metadata has been cleared by a previous test
+        with suppress(KeyError):
+            del sys.modules["tests.unit.models"]
+        import_module("tests.unit.models")
+
     return {
         "db_uri": db_uri,
         "tmpdir": tmpdir,
