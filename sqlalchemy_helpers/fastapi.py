@@ -11,7 +11,7 @@ from .aio import AsyncDatabaseManager
 from .manager import SyncResult
 
 
-def manager_from_config(db_settings):
+def manager_from_config(db_settings, *args, **kwargs):
     """Get the database manager using the Flask app's configuration."""
     if not isinstance(db_settings, dict):
         try:
@@ -21,7 +21,7 @@ def manager_from_config(db_settings):
     uri = str(db_settings["sqlalchemy"]["url"])
     alembic_location = str(db_settings["alembic"]["migrations_path"])
     manager = AsyncDatabaseManager(
-        uri, alembic_location, engine_args=db_settings["sqlalchemy"]
+        uri, alembic_location, engine_args=db_settings["sqlalchemy"], *args, **kwargs
     )
     return manager
 
