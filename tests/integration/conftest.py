@@ -5,6 +5,8 @@ import sys
 import alembic
 import pytest
 
+from sqlalchemy_helpers.manager import Base
+
 
 @pytest.fixture
 def full_app(tmpdir, app):
@@ -33,6 +35,10 @@ def full_app(tmpdir, app):
     os.environ["PYTHONPATH"] = os.pathsep.join(
         [str(tmpdir)] + (existing_path.split(os.pathsep) if existing_path else [])
     )
+    # Unimport app from previous tests
+    for module in list(sys.modules):
+        if module == "testapp" or module.startswith("testapp."):
+            del sys.modules[module]
     yield
     del os.environ["FLASK_APP"]
     sys.path.remove(str(tmpdir))
@@ -40,3 +46,10 @@ def full_app(tmpdir, app):
         del os.environ["PYTHONPATH"]
     else:
         os.environ["PYTHONPATH"] = existing_path
+
+
+@pytest.fixture
+def clear_metadata():
+    Base.metadata.clear()
+    yield
+    Base.metadata.clear()

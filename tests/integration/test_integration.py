@@ -6,7 +6,7 @@ from importlib import import_module
 import alembic
 
 
-def test_config(full_app, tmpdir):
+def test_config(full_app, clear_metadata, tmpdir):
     """Check that the app configuration is set."""
     app_module = import_module("testapp.app")
     config = app_module.app.config
@@ -17,7 +17,7 @@ def test_config(full_app, tmpdir):
     assert config["DB_MODELS_LOCATION"] == "testapp.models"
 
 
-def test_models(full_app, tmpdir):
+def test_models(full_app, clear_metadata, tmpdir):
     """Check that the models were properly imported."""
     import_module("testapp.app")
     manager_module = import_module("sqlalchemy_helpers.manager")
