@@ -23,10 +23,22 @@ Released on {{ versiondata.date }}. This is a {major|feature|bugfix} release tha
 
 {% if definitions[category]['showcontent'] -%}
 {%- for text, values in sections[section][category].items() %}
-- {{ text }} ({% for value in values -%}
-                 {{ reference(value) }}
-                 {%- if not loop.last %}, {% endif -%}
-              {%- endfor %}).
+- {{ text }}
+{%- if values %}
+{% if "\n  - " in text or '\n  * ' in text %}
+
+
+  (
+{%- else %}
+ (
+{%- endif -%}
+{%- for issue in values %}
+{{ reference(issue) }}{% if not loop.last %}, {% endif %}
+{%- endfor %}
+)
+{% else %}
+
+{% endif %}
 {% endfor -%}
 {%- else -%}
 - {{ sections[section][category]['']|sort|join(', ') }}
@@ -37,7 +49,6 @@ No significant changes.
 
 {% else -%}
 {%- endif %}
-
 {% endfor -%}
 {%- if sections[section]["author"] %}
 ## {{definitions['author']["name"]}}
@@ -53,6 +64,9 @@ reviews for this release:
 {% else -%}
 No significant changes.
 
-
-{% endif -%}
-{%- endfor -%}
+{% endif %}
+{%- endfor +%}
+{#
+This comment adds one more newline at the end of the rendered newsfile content.
+In this way the there are 2 newlines between the latest release and the previous release content.
+#}

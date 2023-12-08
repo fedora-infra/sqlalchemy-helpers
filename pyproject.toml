@@ -128,7 +128,7 @@ issue_format = "{issue}"
 template = "news/_template.md"
 title_format = "## Version [{version}](https://github.com/fedora-infra/sqlalchemy-helpers/tree/{version})"
 underlines = ["", "", ""]
-wrap = true
+wrap = false
 all_bullets = true
 
   [[tool.towncrier.type]]
