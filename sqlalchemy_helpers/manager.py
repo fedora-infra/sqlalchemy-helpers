@@ -58,7 +58,7 @@ class DatabaseManager:
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, engine_args=None, base_model=None):
+    def __init__(self, uri, alembic_location, *, engine_args=None, base_model=None):
         self.engine = self._make_engine(uri, engine_args)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)

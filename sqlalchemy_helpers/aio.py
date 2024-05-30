@@ -61,7 +61,7 @@ class AsyncDatabaseManager(DatabaseManager):
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, engine_args=None, base_model=None):
+    def __init__(self, uri, alembic_location, *, engine_args=None, base_model=None):
         super().__init__(uri, alembic_location, engine_args=engine_args)
         self.Session = sessionmaker(
             class_=AsyncSession, expire_on_commit=False, bind=self.engine, future=True

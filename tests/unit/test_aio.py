@@ -26,7 +26,7 @@ async def manager(app, async_enabled_env_script):
 def test_manager_engine_args(app, monkeypatch):
     create_engine = mock.Mock()
     monkeypatch.setattr("sqlalchemy_helpers.aio.create_async_engine", create_engine)
-    AsyncDatabaseManager(app["db_uri"], app["alembic_dir"], {"foo": "bar"})
+    AsyncDatabaseManager(app["db_uri"], app["alembic_dir"], engine_args={"foo": "bar"})
     create_engine.assert_called_once_with(
         url=make_url(app["db_uri"]).set(drivername="sqlite+aiosqlite"), foo="bar"
     )

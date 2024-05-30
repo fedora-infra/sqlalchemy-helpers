@@ -24,7 +24,7 @@ def manager(app):
 def test_manager_engine_args(app, monkeypatch):
     create_engine = mock.Mock()
     monkeypatch.setattr("sqlalchemy_helpers.manager.create_engine", create_engine)
-    DatabaseManager(app["db_uri"], app["alembic_dir"], {"foo": "bar"})
+    DatabaseManager(app["db_uri"], app["alembic_dir"], engine_args={"foo": "bar"})
     create_engine.assert_called_once_with(url=app["db_uri"], foo="bar")
 
 
