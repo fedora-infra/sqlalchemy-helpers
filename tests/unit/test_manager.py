@@ -10,6 +10,7 @@ from sqlalchemy_helpers.manager import (
     get_or_create,
     is_sqlite,
     SyncResult,
+    update_or_create,
 )
 
 from .models import User
@@ -93,6 +94,52 @@ def test_get_or_create_property(manager, session):
     user2, created = User.get_or_create(name="dummy")
     assert created is False
     assert user.id == user2.id
+
+
+def test_update_or_create(manager, session):
+    manager.create()
+    user, created = update_or_create(
+        session, User, name="dummy", defaults={"full_name": "Dummy"}
+    )
+    assert created is True
+    assert isinstance(user, User)
+    assert user.name == "dummy"
+    assert user.full_name == "Dummy"
+    # Now update it
+    user2, created = update_or_create(
+        session, User, name="dummy", defaults={"full_name": "New Value"}
+    )
+    assert created is False
+    assert isinstance(user2, User)
+    assert user.id == user2.id
+    assert user.full_name == "New Value"
+    # Test create_defaults
+    user3, created = update_or_create(
+        session,
+        User,
+        name="dummy2",
+        defaults={"full_name": "Wrong Value"},
+        create_defaults={"full_name": "Correct Value"},
+    )
+    assert created is True
+    assert user3.name == "dummy2"
+    assert user3.full_name == "Correct Value"
+
+
+def test_update_or_create_property(app, monkeypatch):
+    update_or_create = mock.Mock()
+    monkeypatch.setattr("sqlalchemy_helpers.manager.update_or_create", update_or_create)
+    manager = DatabaseManager(app["db_uri"], app["alembic_dir"])
+    manager.create()
+    kwargs = dict(
+        name="dummy",
+        defaults={"full_name": "Dummy"},
+        create_defaults={"full_name": "Initial Dummy"},
+    )
+    User.update_or_create(**kwargs)
+    update_or_create.assert_called_once_with(
+        session=manager.Session(), model=User, **kwargs
+    )
 
 
 # Migration helpers

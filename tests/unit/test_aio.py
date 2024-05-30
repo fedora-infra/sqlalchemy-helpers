@@ -11,6 +11,7 @@ from sqlalchemy_helpers.aio import (
     AsyncDatabaseManager,
     get_by_pk,
     get_or_create,
+    update_or_create,
 )
 from sqlalchemy_helpers.manager import DatabaseStatus, exists_in_db, SyncResult
 
@@ -151,3 +152,48 @@ async def test_get_or_create_property(manager, async_session):
     user2, created = await User.get_or_create(async_session, name="dummy")
     assert created is False
     assert user.id == user2.id
+
+
+async def test_async_update_or_create(manager, async_session):
+    await manager.create()
+    user, created = await update_or_create(
+        async_session, User, name="dummy", defaults={"full_name": "Dummy"}
+    )
+    assert created is True
+    assert isinstance(user, User)
+    assert user.name == "dummy"
+    assert user.full_name == "Dummy"
+    # Now update it
+    user2, created = await update_or_create(
+        async_session, User, name="dummy", defaults={"full_name": "New Value"}
+    )
+    assert created is False
+    assert isinstance(user2, User)
+    assert user.id == user2.id
+    assert user.full_name == "New Value"
+    # Test create_defaults
+    user3, created = await update_or_create(
+        async_session,
+        User,
+        name="dummy2",
+        defaults={"full_name": "Wrong Value"},
+        create_defaults={"full_name": "Correct Value"},
+    )
+    assert created is True
+    assert user3.name == "dummy2"
+    assert user3.full_name == "Correct Value"
+
+
+async def test_async_update_or_create_property(app, monkeypatch):
+    session = mock.Mock()
+    update_or_create = mock.AsyncMock()
+    monkeypatch.setattr("sqlalchemy_helpers.aio.update_or_create", update_or_create)
+    manager = AsyncDatabaseManager(app["db_uri"], app["alembic_dir"])
+    await manager.create()
+    kwargs = dict(
+        name="dummy",
+        defaults={"full_name": "Dummy"},
+        create_defaults={"full_name": "Initial Dummy"},
+    )
+    await User.update_or_create(session, **kwargs)
+    update_or_create.assert_called_once_with(session, model=User, **kwargs)

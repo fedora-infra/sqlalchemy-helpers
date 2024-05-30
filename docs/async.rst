@@ -45,6 +45,8 @@ first argument::
     user = await User.get_by_pk(session, 42)
     # or
     user, created = await User.get_or_create(session, name="foo")
+    # or
+    user, created = await User.update_or_create(session, name="foo", defaults=dict(full_name="Foo"))
 
 
 Alembic

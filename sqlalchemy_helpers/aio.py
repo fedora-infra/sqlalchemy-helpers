@@ -70,6 +70,7 @@ class AsyncDatabaseManager(DatabaseManager):
         self._base_model.get_by_pk = model_property(get_by_pk)
         self._base_model.get_one = model_property(get_one)
         self._base_model.get_or_create = model_property(get_or_create)
+        self._base_model.update_or_create = model_property(update_or_create)
 
     def _make_engine(self, uri, engine_args):
         """Create the SQLAlchemy engine.
@@ -216,3 +217,33 @@ async def get_or_create(session, model, **attrs):
         created = False
 
     return obj, created
+
+
+async def update_or_create(
+    session, model, defaults=None, create_defaults=None, **attrs
+):
+    """Function like Django's ``update_or_create()`` method.
+
+    It will return a tuple, the first argument being the instance and the
+    second being a boolean: ``True`` if the instance has been created and
+    ``False`` otherwise.
+
+    Example::
+
+        user, created = update_or_create(session, User, name="foo", defaults={"full_name": "Foo"})
+
+    """
+    defaults = defaults or {}
+    create_defaults = create_defaults or defaults
+    try:
+        obj = await get_one(session=session, model=model, **attrs)
+        for key, value in defaults.items():
+            setattr(obj, key, value)
+        return obj, False
+    except NoResultFound:
+        new_attrs = attrs.copy()
+        new_attrs.update(create_defaults)
+        obj = model(**new_attrs)
+        session.add(obj)
+        await session.flush()  # get an id
+        return obj, True

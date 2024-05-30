@@ -80,6 +80,14 @@ For convenience, this function is also available as a model method::
 
     user, created = User.get_or_create(name="foo")
 
+The same goes for :func:`update_or_create() <sqlalchemy_helpers.manager.update_or_create>`:
+
+    from sqlalchemy_helpers import update_or_create
+
+    user, created = update_or_create(User, name="foo", defaults={"email": "foo@example.com"})
+
+This function is available as a model method as well.
+
 Other useful model methods are::
 
     user = User.get_one(name="foo")
@@ -115,7 +123,7 @@ First, create a python module to instanciate the :class:`DatabaseExtension
 
     # database.py
 
-    from sqlalchemy_helpers import Base, get_or_create, is_sqlite, exists_in_db
+    from sqlalchemy_helpers import Base, get_or_create, update_or_create, is_sqlite, exists_in_db
     from sqlalchemy_helpers.flask_ext import DatabaseExtension, get_or_404, first_or_404
 
     db = DatabaseExtension()

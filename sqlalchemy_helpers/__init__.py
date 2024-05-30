@@ -15,6 +15,7 @@ from .manager import (
     get_or_create,
     is_sqlite,
     SyncResult,
+    update_or_create,
 )
 
 

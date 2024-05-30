@@ -27,7 +27,8 @@ Here's what sqlalchemy-helpers provides:
 - SQLAlchemy naming convention for easier schema upgrades
 - Automatically activate foreign keys on SQLite
 - Addition of some useful query properties on your models
-- A query function `get_or_create()` that you can call directly or use on your model classes
+- Functions such as `get_or_create()` or `update_or_create()` that you can call directly or use on
+  your model classes
 - Optional Flask integration: you can use sqlalchemy-helpers outside of a Flask app and feel at home
 - The models created with sqlalchemy-helpers work both inside and outside the Flask application
   context
