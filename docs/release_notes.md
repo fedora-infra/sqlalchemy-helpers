@@ -8,7 +8,19 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
-## Version [0.13.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/0.13.0)
+## Version [1.0.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.0)
+
+Released on 2024-05-30. This is a feature release.
+
+### Features
+
+- Add an `update_or_create()` function similar to Django's ([#422](https://github.com/fedora-infra/sqlalchemy-helpers/issues/422))
+- Allow `aio.manager_from_config()` to pass arguments to the `AsyncDatabaseManager`
+- Allow a few methods to use an existing session ([993e6a5](https://github.com/fedora-infra/sqlalchemy-helpers/commits/993e6a5)).
+- Officially support Python 3.12 ([7b88ef7](https://github.com/fedora-infra/sqlalchemy-helpers/commits/7b88ef7)).
+- The `engine_args` and `base_model` arguments must now be keywords ([abaccdc](https://github.com/fedora-infra/sqlalchemy-helpers/commits/abaccdc)).
+
+## Version [0.13.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v0.13.0)
 
 Released on 2023-11-16. This is a feature release that adds customization of the model base class.
 
@@ -17,7 +29,7 @@ Released on 2023-11-16. This is a feature release that adds customization of the
 - Allow customization of the model base class
   ([bc26cd3](https://github.com/fedora-infra/sqlalchemy-helpers/commits/bc26cd3)).
 
-## Version [0.12.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/0.12.1)
+## Version [0.12.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v0.12.1)
 
 Released on 2023-10-12. This is a minor release that adds docs and development improvements
 

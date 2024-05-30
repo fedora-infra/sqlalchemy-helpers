@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sqlalchemy-helpers"
-version = "0.13.0"
+version = "1.0.0"
 description = "SQLAlchemy Helpers"
 
 license = "LGPL-3.0-or-later"
@@ -127,7 +127,7 @@ filename = "docs/release_notes.md"
 directory = "news/"
 issue_format = "{issue}"
 template = "news/_template.md"
-title_format = "## Version [{version}](https://github.com/fedora-infra/sqlalchemy-helpers/tree/{version})"
+title_format = "## Version [{version}](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v{version})"
 underlines = ["", "", ""]
 wrap = false
 all_bullets = true
