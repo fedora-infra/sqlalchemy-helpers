@@ -9,6 +9,7 @@ queue_rules:
       - check-success=Unit tests (py39)
       - check-success=Unit tests (py310)
       - check-success=Unit tests (py311)
+      - check-success=Unit tests (py312)
 
 
 pull_request_rules:
@@ -30,3 +31,4 @@ pull_request_rules:
       - check-success=Unit tests (py39)
       - check-success=Unit tests (py310)
       - check-success=Unit tests (py311)
+      - check-success=Unit tests (py312)
