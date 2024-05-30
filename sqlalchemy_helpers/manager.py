@@ -10,6 +10,7 @@ Attributes:
 import enum
 import logging
 import os
+from contextlib import nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
 
@@ -87,10 +88,22 @@ class DatabaseManager:
         engine_args["url"] = uri
         return create_engine(**engine_args)
 
-    def get_current_revision(self, session):
-        """Get the current alembic database revision."""
-        alembic_context = MigrationContext.configure(session.connection())
-        return alembic_context.get_current_revision()
+    def _get_session_context(self, session=None):
+        if session is None:
+            return self.Session()
+        else:
+            return nullcontext(session)
+
+    def get_current_revision(self, session=None):
+        """Get the current alembic database revision.
+
+        Args:
+            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+                if one is to be created.
+        """
+        with self._get_session_context(session) as session:
+            alembic_context = MigrationContext.configure(session.connection())
+            return alembic_context.get_current_revision()
 
     def get_latest_revision(self):
         """Get the most up-to-date alembic database revision available."""
@@ -115,12 +128,16 @@ class DatabaseManager:
                 alembic_context = MigrationContext.configure(connection)
                 alembic_context._version.drop(bind=connection)
 
-    def get_status(self):
+    def get_status(self, session=None):
         """Get the status of the database.
+
+        Args:
+            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+                if one is to be created.
 
         Returns:
             DatabaseStatus member: see :class:`DatabaseStatus`."""
-        with self.Session() as session:
+        with self._get_session_context(session) as session:
             current = self.get_current_revision(session=session)
         return self._compare_to_latest(current)
 
@@ -132,13 +149,17 @@ class DatabaseManager:
             return DatabaseStatus.UPGRADE_AVAILABLE
         return DatabaseStatus.UP_TO_DATE
 
-    def sync(self):
+    def sync(self, session=None):
         """Create or update the database schema.
+
+        Args:
+            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+                if one is to be created.
 
         Returns:
             SyncResult member: see :class:`SyncResult`.
         """
-        with self.Session() as session:
+        with self._get_session_context(session) as session:
             current_rev = self.get_current_revision(session)
         # If the database is empty, it should be created ; otherwise it should
         # be upgraded.
