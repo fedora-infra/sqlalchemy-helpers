@@ -70,9 +70,7 @@ class DatabaseManager:
         self._base_model = base_model or Base
         self._base_model.get_by_pk = session_and_model_property(self.Session, get_by_pk)
         self._base_model.get_one = session_and_model_property(self.Session, get_one)
-        self._base_model.get_or_create = session_and_model_property(
-            self.Session, get_or_create
-        )
+        self._base_model.get_or_create = session_and_model_property(self.Session, get_or_create)
         self._base_model.update_or_create = session_and_model_property(
             self.Session, update_or_create
         )

@@ -111,8 +111,6 @@ def test_flask_ext_get_url(flask_app_factory):
     )
     assert get_url_from_app(factory) == "sqlite:////outside/app/context"
 
-    flask_app = flask_app_factory(
-        {"SQLALCHEMY_DATABASE_URI": "sqlite:////inside/app/context"}
-    )
+    flask_app = flask_app_factory({"SQLALCHEMY_DATABASE_URI": "sqlite:////inside/app/context"})
     with flask_app.app_context():
         assert get_url_from_app(factory) == "sqlite:////inside/app/context"

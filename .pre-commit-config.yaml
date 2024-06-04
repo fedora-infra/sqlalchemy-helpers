@@ -8,18 +8,12 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
-    hooks:
-      - id: pyupgrade
-        args:
-          - --py38-plus
-
   # https://black.readthedocs.io/en/stable/integrations/source_version_control.html
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:
       - id: black
+        args: ["--diff"]
 
   # Ruff
   - repo: https://github.com/charliermarsh/ruff-pre-commit

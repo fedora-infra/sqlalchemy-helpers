@@ -223,9 +223,7 @@ async def get_or_create(session, model, **attrs):
     return obj, created
 
 
-async def update_or_create(
-    session, model, defaults=None, create_defaults=None, **attrs
-):
+async def update_or_create(session, model, defaults=None, create_defaults=None, **attrs):
     """Function like Django's ``update_or_create()`` method.
 
     It will return a tuple, the first argument being the instance and the

@@ -102,9 +102,7 @@ def test_get_or_create_property(manager, session):
 
 def test_update_or_create(manager, session):
     manager.create()
-    user, created = update_or_create(
-        session, User, name="dummy", defaults={"full_name": "Dummy"}
-    )
+    user, created = update_or_create(session, User, name="dummy", defaults={"full_name": "Dummy"})
     assert created is True
     assert isinstance(user, User)
     assert user.name == "dummy"
@@ -141,9 +139,7 @@ def test_update_or_create_property(app, monkeypatch):
         create_defaults={"full_name": "Initial Dummy"},
     )
     User.update_or_create(**kwargs)
-    update_or_create.assert_called_once_with(
-        session=manager.Session(), model=User, **kwargs
-    )
+    update_or_create.assert_called_once_with(session=manager.Session(), model=User, **kwargs)
 
 
 # Migration helpers

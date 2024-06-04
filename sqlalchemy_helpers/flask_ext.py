@@ -22,9 +22,7 @@ def _get_manager(engine_args=None, app=None):
     uri = app.config["SQLALCHEMY_DATABASE_URI"]
     alembic_location = app.config["DB_ALEMBIC_LOCATION"]
     base_model = app.extensions[DatabaseExtension._app_base_model_name]
-    manager = DatabaseManager(
-        uri, alembic_location, engine_args=engine_args, base_model=base_model
-    )
+    manager = DatabaseManager(uri, alembic_location, engine_args=engine_args, base_model=base_model)
     return manager
 
 
@@ -68,9 +66,7 @@ class DatabaseExtension:
         base_model = base_model or self._base_model
         # Set config defaults
         app.config.setdefault("SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
-        app.config.setdefault(
-            "DB_ALEMBIC_LOCATION", os.path.join(app.root_path, "migrations")
-        )
+        app.config.setdefault("DB_ALEMBIC_LOCATION", os.path.join(app.root_path, "migrations"))
         main_module = app.import_name
         if main_module.endswith(".app"):
             main_module = main_module[:-4]
@@ -90,9 +86,7 @@ class DatabaseExtension:
         # they will be registered properly on the metadata.
         models_location = app.config["DB_MODELS_LOCATION"]
         try:
-            for module in find_modules(
-                models_location, include_packages=True, recursive=True
-            ):
+            for module in find_modules(models_location, include_packages=True, recursive=True):
                 import_string(module)
         except ValueError:
             # It's just a module, importing it is enough

@@ -15,9 +15,7 @@ def test_config(full_app, clear_metadata, tmpdir):
     app_module = import_module("testapp.app")
     config = app_module.app.config
     assert config["SQLALCHEMY_DATABASE_URI"] == f"sqlite:///{tmpdir}/database.sqlite"
-    assert config["DB_ALEMBIC_LOCATION"] == os.path.join(
-        tmpdir, "testapp", "migrations"
-    )
+    assert config["DB_ALEMBIC_LOCATION"] == os.path.join(tmpdir, "testapp", "migrations")
     assert config["DB_MODELS_LOCATION"] == "testapp.models"
 
 

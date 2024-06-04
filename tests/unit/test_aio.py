@@ -59,9 +59,7 @@ async def test_manager_get_status(manager):
         None, partial(alembic.command.revision, manager.alembic_cfg, rev_id="second")
     )
     assert (await manager.get_status()) == DatabaseStatus.UPGRADE_AVAILABLE
-    await loop.run_in_executor(
-        None, alembic.command.stamp, manager.alembic_cfg, "second"
-    )
+    await loop.run_in_executor(None, alembic.command.stamp, manager.alembic_cfg, "second")
     assert (await manager.get_status()) == DatabaseStatus.UP_TO_DATE
 
 
