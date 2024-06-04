@@ -2,7 +2,8 @@
 
 This project contains a tools to use SQLAlchemy and Alembic in a project.
 
-It has a Flask integration, and other framework integrations could be added in the future.
+It has Flask and FastAPI integrations, and other framework integrations could be added
+in the future.
 
 The full documentation is [on ReadTheDocs](https://sqlalchemy-helpers.readthedocs.io).
 
@@ -47,3 +48,9 @@ how to use it in your application, with or without a web framework.
 
 Those projects are great, but we also have apps that are not based on Flask and that would benefit
 from the features provided by sqlalchemy-helpers.
+
+- Is it used?
+
+Quite a few applications among the Fedora Infrastructure applications use this library to avoid
+code duplication. It is unlikely that we'll drop it, unless we drop SQLAlchemy itself, or Python.
+Which is even more unlikely.
