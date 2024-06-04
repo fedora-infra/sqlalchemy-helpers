@@ -15,11 +15,15 @@ repository = "http://github.com/fedora-infra/sqlalchemy-helpers"
 homepage = "http://github.com/fedora-infra/sqlalchemy-helpers"
 
 include = [
-    "tox.ini",
-    "docs/*",
-    "docs/*/*",
-    "tests/*",
-    "tests/*/*",
+    { path = "tox.ini", format = "sdist" },
+    { path = "docs/*", format = "sdist" },
+    { path = "docs/*/*", format = "sdist" },
+    { path = "tests/*", format = "sdist" },
+    { path = "tests/*/*", format = "sdist" },
+]
+
+exclude = [
+    { path = "docs/_build", format = "sdist" },
 ]
 
 classifiers = [
