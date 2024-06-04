@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y git libpq-devel
-          pip install poetry>=1.2
+          pip install "poetry>=1.2"
 
       - name: Mark the working directory as safe for Git
         run: git config --global --add safe.directory $PWD
@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y krb5-devel tox libpq-devel
-          pip install poetry>=1.2
+          pip install "poetry>=1.2"
 
       - name: Run the licenses check
         run: tox -e licenses
@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y krb5-devel tox libpq-devel
-          pip install poetry>=1.2
+          pip install "poetry>=1.2"
 
       - name: Build the docs
         run: tox -e docs
@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y krb5-devel tox libpq-devel
-          pip install poetry>=1.2
+          pip install "poetry>=1.2"
 
       - name: Run the tests
         run: tox -e ${{ matrix.pyver }}-${{ matrix.sqlaver }}
