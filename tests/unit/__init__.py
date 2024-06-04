@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the Fedora Project
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+
 def assert_partial_call(call, expected_args=None, expected_kwargs=None):
     assert (
         expected_args is not None or expected_kwargs is not None

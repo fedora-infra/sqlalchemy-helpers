@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Contributors to the Fedora Project
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 """SQLAlchemy Helpers
 
 A set of tools to integrate SQLAlchemy and Alembic in your project, with sane defauts.

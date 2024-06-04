@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 Contributors to the Fedora Project
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 STRATEGY_URL=https://raw.githubusercontent.com/fedora-infra/shared/main/liccheck-strategy.ini
 
 trap 'rm -f "$TMPFILE $STRATEGY_TMPFILE"' EXIT

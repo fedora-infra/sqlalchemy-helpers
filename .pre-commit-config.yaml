@@ -26,3 +26,9 @@ repos:
 #      - id: rstcheck
 #        exclude: "news/_template.rst"
 #        additional_dependencies: [sphinx]
+
+  # License headers
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v3.0.1
+    hooks:
+      - id: reuse
