@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import re
 import sys
 
 
@@ -88,25 +89,25 @@ html_static_path = ["_static"]
 
 # -- Extension configuration -------------------------------------------------
 
-
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
 }
 
+myst_enable_extensions = [
+    "colon_fence",
+]
+myst_heading_anchors = 3
+
 
 # -- Options for intersphinx extension ---------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#configuration
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
 }
 
-extlinks = {
-    "commit": ("https://github.com/fedora-infra/sqlalchemy-helpers/commit/%s", "%s"),
-    "issue": ("https://github.com/fedora-infra/sqlalchemy-helpers/issues/%s", "#%s"),
-    "pr": ("https://github.com/fedora-infra/sqlalchemy-helpers/pull/%s", "PR#%s"),
-}
 
 # -- Misc -----
 
@@ -127,5 +128,17 @@ def run_apidoc(_):
     )
 
 
+github_url = "https://github.com/fedora-infra/sqlalchemy-helpers"
+
+
+def changelog_github_links(app, docname, source):
+    if docname != "release_notes":
+        return
+    github_issue_re = re.compile(r"#(\d+)")
+    for docnr, doc in enumerate(source):
+        source[docnr] = github_issue_re.sub(f"[#\\1]({github_url}/issues/\\1)", doc)
+
+
 def setup(app):
     app.connect("builder-inited", run_apidoc)
+    app.connect("source-read", changelog_github_links)

@@ -49,9 +49,10 @@ No significant changes.
 
 {% else -%}
 {%- endif %}
+
 {% endfor -%}
-{%- if sections[section]["author"] %}
-## {{definitions['author']["name"]}}
+{% if sections[section]["author"] -%}
+### {{definitions['author']["name"]}}
 
 Many thanks to the contributors of bug reports, pull requests, and pull request
 reviews for this release:
@@ -59,7 +60,7 @@ reviews for this release:
 {% for text, values in sections[section]["author"].items() -%}
 - {{ text }}
 {% endfor -%}
-{%- endif -%}
+{%- endif %}
 
 {% else -%}
 No significant changes.

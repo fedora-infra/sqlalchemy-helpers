@@ -131,10 +131,11 @@ omit = [
 package = "sqlalchemy_helpers"
 filename = "docs/release_notes.md"
 directory = "news/"
-issue_format = "{issue}"
+start_string = "<!-- towncrier release notes start -->\n"
+underlines = ["", "", ""]
 template = "news/_template.md"
 title_format = "## Version [{version}](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v{version})"
-underlines = ["", "", ""]
+issue_format = "{issue}"
 wrap = false
 all_bullets = true
 

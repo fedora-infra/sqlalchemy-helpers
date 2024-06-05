@@ -14,7 +14,7 @@ Released on 2024-05-30. This is a feature release.
 
 ### Features
 
-- Add an `update_or_create()` function similar to Django's ([#422](https://github.com/fedora-infra/sqlalchemy-helpers/issues/422))
+- Add an `update_or_create()` function similar to Django's (#422)
 - Allow `aio.manager_from_config()` to pass arguments to the `AsyncDatabaseManager`
 - Allow a few methods to use an existing session ([993e6a5](https://github.com/fedora-infra/sqlalchemy-helpers/commits/993e6a5)).
 - Officially support Python 3.12 ([7b88ef7](https://github.com/fedora-infra/sqlalchemy-helpers/commits/7b88ef7)).
@@ -52,7 +52,7 @@ This is a feature release that adds MySQL/MariaDB support in the async mode.
 
 ### Features
 
-- Add support for MySQL/MariaDB in the async mode ([#325](https://github.com/fedora-infra/sqlalchemy-helpers/issues/325)).
+- Add support for MySQL/MariaDB in the async mode (#325).
 
 ### Bug Fixes
 
@@ -62,7 +62,7 @@ This is a feature release that adds MySQL/MariaDB support in the async mode.
 ### Dependency Changes
 
 - Fix a minor compatibility issue with SQLAlchemy 2.0 ([3f379e2](https://github.com/fedora-infra/sqlalchemy-helpers/commit/3f379e2)).
-- Support Pydantic 2.0+ and Pydantic Settings ([#323](https://github.com/fedora-infra/sqlalchemy-helpers/issues/323)).
+- Support Pydantic 2.0+ and Pydantic Settings (#323).
 
 ## Version 0.11.0
 
@@ -77,7 +77,5 @@ This is a major release that adds AsyncIO and FastAPI support.
 
 ### Features
 
-- Support for asyncio-based connections, and FastAPI integration
-  ([#317](https://github.com/fedora-infra/sqlalchemy-helpers/issues/317)).
-- Allow passing extra arguments to `create_engine()` and `create_async_engine()`
-  ([#319](https://github.com/fedora-infra/sqlalchemy-helpers/issues/319)).
+- Support for asyncio-based connections, and FastAPI integration (#317).
+- Allow passing extra arguments to `create_engine()` and `create_async_engine()` (#319).
