@@ -8,6 +8,22 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## Version [1.0.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.1)
+
+Released on 2024-06-05. This is a bugfix release.
+
+### Bug Fixes
+
+- Don't include the tests when installing the package with pip ([685b92a](https://github.com/fedora-infra/sqlalchemy-helpers/commits/685b92a))
+
+### Development Improvements
+
+- Add generic pre-commit checks ([6d9dffd](https://github.com/fedora-infra/sqlalchemy-helpers/commits/6d9dffd))
+- Adjust Ruff and Black config ([5c3b7f4](https://github.com/fedora-infra/sqlalchemy-helpers/commits/5c3b7f4))
+- Set the licenses headers with Reuse ([acbdf96](https://github.com/fedora-infra/sqlalchemy-helpers/commits/acbdf96))
+
+
+
 ## Version [1.0.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.0)
 
 Released on 2024-05-30. This is a feature release.
