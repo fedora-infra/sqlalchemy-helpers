@@ -70,6 +70,7 @@ asyncpg = "*"
 pydantic = "*"
 pydantic-settings = "*"
 reuse = "*"
+poetry-plugin-export = "^1.8.0"
 
 [tool.poetry.extras]
 flask = ["Flask"]
