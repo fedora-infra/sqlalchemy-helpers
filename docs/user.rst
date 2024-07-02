@@ -150,11 +150,13 @@ In the application factory, import the instance and call its :class:`init_app()
 
         return app
 
+In your application configuration, set the ``SQLALCHEMY_DATABASE_URI`` key to your
+database URL, for example ``sqlite:///myapp.db``.
+
 If you need to define a custom base class, you can pass it to the extension using the
 ``base_model`` argument of the
 :meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.__init__` constructor or the
 :meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.init_app` function.
-
 
 Models
 ------
@@ -188,6 +190,14 @@ SQLAlchemy, all you have to do is replace the :class:`Base` import with::
 
     Base = decalarative_base()
 
+The Flask extension will automatically import your models to populate the metadata. If your app's
+models aren't in a module called ``models`` and/or aren't at the root of your application, you can
+use the configuration key ``DB_MODELS_LOCATION`` to set the module name, for example::
+
+    DB_MODELS_LOCATION = "myapp.lib.model"
+
+The flask extension will automatically import the ``myapp.lib.model`` module and its submodules.
+
 
 Views
 -----
@@ -216,6 +226,16 @@ by ID or returning a 404 error if not found::
 
 Migrations
 ----------
+
+If your app's migrations directory (the one containing alembic's ``env.py`` file) isn't named
+``migrations`` and/or isn't at the root of your application's directory, you can use the
+configuration key ``DB_ALEMBIC_LOCATION`` to point to it, for example::
+
+    ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+    DB_ALEMBIC_LOCATION = os.path.join(ROOT_PATH, "alembic")
+
+This would be for an app that has an alembic directory named ``alembic`` at the root of the
+application's directory.
 
 You can adjust alembic's ``env.py`` file to get the database URL from your app's configuration::
 
