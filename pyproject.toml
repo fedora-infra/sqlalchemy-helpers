@@ -42,7 +42,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8.0"
-SQLAlchemy = ">=1.4.0"
+SQLAlchemy = { version = ">=1.4.0", extras = ["asyncio"] }
 alembic = ">=1.6.5"
 Flask = { version = "^2.0.0 || ^3.0.0", optional = true }
 sphinx = {version = "*", optional = true}
