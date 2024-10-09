@@ -110,7 +110,7 @@ First, create a python module to integrate those functions with your Pydantic se
 
     # database.py
 
-    from collections.abc import Iterator
+    from collections.abc import AsyncIterator
     from fastapi import APIRouter, Depends
     from sqlalchemy.ext.asyncio import AsyncSession
     from sqlalchemy_helpers.fastapi import AsyncDatabaseManager, make_db_session, manager_from_config
@@ -124,7 +124,7 @@ First, create a python module to integrate those functions with your Pydantic se
 
     async def gen_db_session(
         db_manager: AsyncDatabaseManager = Depends(gen_db_manager),
-    ) -> Iterator[AsyncSession]:
+    ) -> AsyncIterator[AsyncSession]:
         async for session in make_db_session(db_manager):
             yield session
 

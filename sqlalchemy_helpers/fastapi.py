@@ -6,7 +6,7 @@
 FastAPI integration of database management.
 """
 
-from typing import Iterator
+from collections.abc import AsyncIterator
 
 import click
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -44,7 +44,7 @@ async def syncdb(db_settings):
         click.echo(f"Unexpected sync result: {result}", err=True)
 
 
-async def make_db_session(manager) -> Iterator[AsyncSession]:
+async def make_db_session(manager) -> AsyncIterator[AsyncSession]:
     """Generate database sessions for FastAPI request handlers.
 
     This lets users declare the session as a dependency in request handler
