@@ -8,7 +8,6 @@ queue_rules:
       - check-success=Checks
       - check-success=Licenses
       - check-success=Documentation
-      - check-success=Unit tests (py38)
       - check-success=Unit tests (py39)
       - check-success=Unit tests (py310)
       - check-success=Unit tests (py311)
@@ -18,7 +17,6 @@ queue_rules:
       - check-success=Checks
       - check-success=Licenses
       - check-success=Documentation
-      - check-success=Unit tests (py38)
       - check-success=Unit tests (py39)
       - check-success=Unit tests (py310)
       - check-success=Unit tests (py311)

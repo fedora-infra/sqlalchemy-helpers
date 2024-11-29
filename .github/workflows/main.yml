@@ -92,7 +92,6 @@ jobs:
     strategy:
       matrix:
         pyver:
-          - py38
           - py39
           - py310
           - py311
