@@ -4,13 +4,14 @@
 
 import asyncio
 from functools import partial
+from typing import Annotated
 from unittest import mock
 
 import alembic
 import click
 import pytest
 from click.testing import CliRunner
-from pydantic import AnyUrl, BaseModel, ConfigDict, DirectoryPath
+from pydantic import AnyUrl, BaseModel, ConfigDict, DirectoryPath, Field, UrlConstraints
 from pydantic_settings import BaseSettings
 
 from sqlalchemy_helpers.aio import AsyncDatabaseManager
@@ -27,8 +28,10 @@ def manager(app, async_enabled_env_script):
 
 @pytest.fixture
 def settings(app):
+    DbUrl = Annotated[AnyUrl, UrlConstraints(host_required=False)]
+
     class SQLAlchemyModel(BaseModel):
-        url: AnyUrl = AnyUrl("sqlite:///:memory:")
+        url: DbUrl = Field(default="sqlite:///:memory:")
         echo: bool = False
 
         model_config = ConfigDict(extra="allow")
