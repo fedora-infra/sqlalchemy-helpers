@@ -20,14 +20,22 @@ from alembic.migration import MigrationContext
 from sqlalchemy import exc as sa_exc
 from sqlalchemy import select
 from sqlalchemy.engine import make_url, URL
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import (
+    async_sessionmaker,
+    AsyncAttrs,
+    create_async_engine,
+)
 
-from .manager import Base, DatabaseManager, model_property, SyncResult
+from .manager import Base as SyncBase
+from .manager import DatabaseManager, model_property, SyncResult
 
 
 _log = logging.getLogger(__name__)
+
+
+class Base(AsyncAttrs, SyncBase):
+    pass
 
 
 def _async_from_sync_url(url: Union[URL, str]) -> URL:
@@ -66,10 +74,8 @@ class AsyncDatabaseManager(DatabaseManager):
     """
 
     def __init__(self, uri, alembic_location, *, engine_args=None, base_model=None):
-        super().__init__(uri, alembic_location, engine_args=engine_args)
-        self.Session = sessionmaker(
-            class_=AsyncSession, expire_on_commit=False, bind=self.engine, future=True
-        )
+        super().__init__(uri, alembic_location, engine_args=engine_args, base_model=base_model)
+        self.Session = async_sessionmaker(expire_on_commit=False, bind=self.engine, future=True)
         self._base_model = base_model or Base
         self._base_model.get_by_pk = model_property(get_by_pk)
         self._base_model.get_one = model_property(get_one)

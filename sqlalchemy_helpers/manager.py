@@ -14,6 +14,7 @@ Attributes:
 import enum
 import logging
 import os
+import warnings
 from contextlib import nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
@@ -25,27 +26,34 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy import event as sa_event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
-from sqlalchemy.orm.exc import NoResultFound
-
-
-def get_base(*args, **kwargs):
-    """A wrapper for :func:`declarative_base`."""
-    base = declarative_base(*args, **kwargs)
-    base.metadata.naming_convention = {
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_name)s",
-        "ck": "ck_%(table_name)s_%(constraint_name)s",
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-        "pk": "pk_%(table_name)s",
-    }
-    return base
-
-
-Base = get_base()
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import DeclarativeBase, scoped_session, sessionmaker
 
 
 _log = logging.getLogger(__name__)
+
+
+class Base(DeclarativeBase):
+    """Base class for ORM objects with a naming convention."""
+
+    metadata = MetaData(
+        naming_convention={
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+    )
+
+
+def get_base(*args: Any, **kwargs: Any) -> type[DeclarativeBase]:
+    warnings.warn(
+        "get_base() is deprecated, please use the Base class and subclass it if necessary",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return Base
 
 
 class DatabaseManager:

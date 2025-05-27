@@ -25,6 +25,15 @@ It can be instanciated with::
 
 The arguments are the same as the synchronous manager.
 
+Models
+------
+
+The base model class can be imported from :class:`sqlalchemy_helpers.aio.Base`. It has the
+`AsyncAttrs`_ feature, so you can use the ``awaitable_attrs`` attribute described in the
+documentation.
+
+.. _AsyncAttrs: https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncAttrs
+
 
 Making queries
 --------------
@@ -166,9 +175,9 @@ They will import and work just fine without FastAPI.
 Also note that if you want to move your models away from sqlalchemy-helpers and back to plain
 SQLAlchemy, all you have to do is replace the :class:`Base` import with::
 
-    from sqlalchemy.orm import declarative_base
+    from sqlalchemy.orm import DeclarativeBase
 
-    Base = decalarative_base()
+    Base = DecalarativeBase()
 
 
 Access in path operations

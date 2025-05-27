@@ -8,9 +8,11 @@ import alembic
 import pytest
 
 from sqlalchemy_helpers.manager import (
+    Base,
     DatabaseManager,
     DatabaseStatus,
     exists_in_db,
+    get_base,
     get_or_create,
     is_sqlite,
     SyncResult,
@@ -156,3 +158,9 @@ def test_exists_in_db(manager):
 
 def test_is_sqlite(manager):
     assert is_sqlite(manager.Session.get_bind())
+
+
+def test_get_base_deprecated():
+    with pytest.deprecated_call():
+        base = get_base()
+    assert base is Base

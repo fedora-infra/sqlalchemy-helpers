@@ -13,7 +13,7 @@ Writing models
 --------------
 
 All the models must inherit from the :class:`sqlalchemy_helpers.manager.Base` class. It is
-equivalent to SQLAlchemy's ``declarative_base()`` with a constraint naming convention and some extra
+equivalent to SQLAlchemy's ``DeclarativeBase()`` with a constraint naming convention and some extra
 features.
 
 Example::
@@ -32,15 +32,6 @@ Example::
 
 As you can see, it is very similar to what you would do with plain SQLAlchemy.
 
-If you need to, you can have a different base class for your models, using the
-:func:`sqlalchemy_helpers.manager.get_base` function::
-
-    from sqlalchemy_helpers import get_base
-
-    Base = get_base(cls=CustomBase)
-
-All the arguments passed to the :func:`~sqlalchemy_helpers.manager.get_base` function will be
-transferred to the :func:`sqlalchemy.orm.declarative_base` function.
 
 The database manager
 --------------------
@@ -186,9 +177,9 @@ They will import and work just fine without Flask.
 Also note that if you want to move your models away from sqlalchemy-helpers and back to plain
 SQLAlchemy, all you have to do is replace the :class:`Base` import with::
 
-    from sqlalchemy.orm import declarative_base
+    from sqlalchemy.orm import DeclarativeBase
 
-    Base = decalarative_base()
+    Base = DecalarativeBase
 
 The Flask extension will automatically import your models to populate the metadata. If your app's
 models aren't in a module called ``models`` and/or aren't at the root of your application, you can
