@@ -10,6 +10,8 @@ Attributes:
     __version__ (str): this package's version.
 """
 
+import importlib.metadata
+
 from .manager import (
     Base,
     DatabaseManager,
@@ -24,17 +26,4 @@ from .manager import (
 
 
 # Set the version
-try:
-    import importlib.metadata
-
-    __version__ = importlib.metadata.version("sqlalchemy_helpers")
-except ImportError:
-    try:
-        import pkg_resources
-
-        try:
-            __version__ = pkg_resources.get_distribution("sqlalchemy_helpers").version
-        except pkg_resources.DistributionNotFound:
-            __version__ = None
-    except ImportError:
-        __version__ = None
+__version__ = importlib.metadata.version("sqlalchemy_helpers")

@@ -5,7 +5,7 @@ Asynchronous connections
 
 The sqlalchemy-helpers library supports `AsyncIO connections`_ in SQLAlchemy and Alembic.
 
-.. _AsyncIO connections: https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html
+.. _AsyncIO connections: https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
 
 All the models must still inherit from the :class:`sqlalchemy_helpers.manager.Base` class.
 As a convenience, it is also exported in the :mod:`sqlalchemy_helpers.aio` module.

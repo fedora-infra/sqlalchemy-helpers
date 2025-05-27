@@ -79,7 +79,7 @@ jobs:
           pip install "poetry>=1.2"
 
       - name: Run the tests
-        run: tox -e ${{ matrix.pyver }}-${{ matrix.sqlaver }}
+        run: tox -e ${{ matrix.pyver }}
 
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v1
@@ -92,13 +92,10 @@ jobs:
     strategy:
       matrix:
         pyver:
-          - py39
           - py310
           - py311
           - py312
-        sqlaver:
-          - sqla1
-          - sqla2
+          - py313
 
 
   # https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
