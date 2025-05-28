@@ -8,6 +8,17 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## Version [1.0.2](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.2)
+
+Released on 2025-05-28. This is a bugfix release.
+
+### Dependency Changes
+
+- Drop support for Python 3.8, it's EOL
+- Fix SQLAlchemy dependency, we need at least 1.4.0
+- Use the ["asyncio" extra](https://docs.sqlalchemy.org/en/20/faq/installation.html#i-m-getting-an-error-about-greenlet-not-being-installed-when-i-try-to-use-asyncio) of SQLAlchemy
+
+
 ## Version [1.0.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.1)
 
 Released on 2024-06-05. This is a bugfix release.
@@ -23,7 +34,6 @@ Released on 2024-06-05. This is a bugfix release.
 - Set the licenses headers with Reuse ([acbdf96](https://github.com/fedora-infra/sqlalchemy-helpers/commits/acbdf96))
 
 
-
 ## Version [1.0.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.0)
 
 Released on 2024-05-30. This is a feature release.
@@ -35,6 +45,7 @@ Released on 2024-05-30. This is a feature release.
 - Allow a few methods to use an existing session ([993e6a5](https://github.com/fedora-infra/sqlalchemy-helpers/commits/993e6a5)).
 - Officially support Python 3.12 ([7b88ef7](https://github.com/fedora-infra/sqlalchemy-helpers/commits/7b88ef7)).
 - The `engine_args` and `base_model` arguments must now be keywords ([abaccdc](https://github.com/fedora-infra/sqlalchemy-helpers/commits/abaccdc)).
+
 
 ## Version [0.13.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v0.13.0)
 
@@ -61,6 +72,7 @@ Released on 2023-10-12. This is a minor release that adds docs and development i
 - Convert the release notes to Markdown
   ([841e1fb](https://github.com/fedora-infra/sqlalchemy-helpers/commits/841e1fb)).
 
+
 ## Version 0.12.0
 
 Released on 2023-08-09.
@@ -79,6 +91,7 @@ This is a feature release that adds MySQL/MariaDB support in the async mode.
 
 - Fix a minor compatibility issue with SQLAlchemy 2.0 ([3f379e2](https://github.com/fedora-infra/sqlalchemy-helpers/commit/3f379e2)).
 - Support Pydantic 2.0+ and Pydantic Settings (#323).
+
 
 ## Version 0.11.0
 

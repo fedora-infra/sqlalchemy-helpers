@@ -1,1 +1,0 @@
-Use the ["asyncio" extra](https://docs.sqlalchemy.org/en/20/faq/installation.html#i-m-getting-an-error-about-greenlet-not-being-installed-when-i-try-to-use-asyncio) of SQLAlchemy
