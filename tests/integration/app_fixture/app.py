@@ -6,6 +6,7 @@ import logging
 import os
 
 from flask import Flask, jsonify
+from sqlalchemy import select
 
 from sqlalchemy_helpers.flask_ext import DatabaseExtension, get_or_404
 
@@ -23,7 +24,7 @@ db.init_app(app)
 
 @app.route("/")
 def root():
-    users = db.session.query(AppUser).all()
+    users = db.session.scalars(select(AppUser)).all()
     return jsonify([u.name for u in users])
 
 

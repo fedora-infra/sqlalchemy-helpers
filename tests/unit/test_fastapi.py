@@ -75,7 +75,7 @@ async def test_fastapi_syncdb(settings, manager, monkeypatch):
         mock.Mock(return_value=manager),
     )
     async with manager.engine.connect() as conn:
-        assert not (await conn.run_sync(exists_in_db, "users"))
+        assert not (await conn.run_sync(exists_in_db, "users_async"))
     async with manager.Session() as session:
         assert (await manager.get_current_revision(session)) is None
 
@@ -93,7 +93,7 @@ async def test_fastapi_syncdb(settings, manager, monkeypatch):
     async with manager.Session() as session:
         assert (await manager.get_current_revision(session)) is not None
     async with manager.engine.connect() as conn:
-        assert await conn.run_sync(exists_in_db, "users")
+        assert await conn.run_sync(exists_in_db, "users_async")
     assert "Database created." in result.output
 
     result = await loop.run_in_executor(None, runner.invoke, syncdb_cmd)

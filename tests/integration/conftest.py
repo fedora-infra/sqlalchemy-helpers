@@ -9,6 +9,7 @@ import sys
 import alembic
 import pytest
 
+from sqlalchemy_helpers.aio import Base as AsyncBase
 from sqlalchemy_helpers.manager import Base
 
 
@@ -55,5 +56,7 @@ def full_app(tmpdir, app):
 @pytest.fixture
 def clear_metadata():
     Base.metadata.clear()
+    AsyncBase.metadata.clear()
     yield
     Base.metadata.clear()
+    AsyncBase.metadata.clear()

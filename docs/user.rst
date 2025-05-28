@@ -18,17 +18,18 @@ features.
 
 Example::
 
-    from sqlalchemy import Column, Integer, Unicode
+    from sqlalchemy import Unicode
+    from sqlalchemy.orm import Mapped, mapped_column
     from sqlalchemy_helpers import Base
 
     class User(Base):
 
         __tablename__ = "users"
 
-        id = Column("id", Integer, primary_key=True)
-        name = Column(Unicode(254), index=True, unique=True, nullable=False)
-        full_name = Column(Unicode(254), nullable=False)
-        timezone = Column(Unicode(127), nullable=True)
+        id: Mapped[int] = mapped_column(primary_key=True)
+        name: Mapped[str] = mapped_column(Unicode(254), index=True, unique=True)
+        full_name: Mapped[str] = mapped_column(Unicode(254))
+        timezone: Mapped[str] | None = mapped_column(Unicode(127))
 
 As you can see, it is very similar to what you would do with plain SQLAlchemy.
 
@@ -57,8 +58,10 @@ The Database Manager has a :attr:`Session <sqlalchemy_helpers.manager.DatabaseMa
 property mapping to SQLAlchemy's ``Session`` factory, scoped for multithreading use. Get a session
 by calling::
 
+    from sqlalchemy import select
+
     session = db.Session()
-    user = session.query(User).filter_by(name="foo").one()
+    user = session.scalars(select(User).filter_by(name="foo")).one()
 
 This library also provides a :func:`get_or_create() <sqlalchemy_helpers.manager.get_or_create>`
 function, as popularized by Django::
@@ -157,7 +160,9 @@ You can declare your models as you usually would with SQLAlchemy, just inherit f
 
     # models.py
 
-    from sqlalchemy import Column, Integer, Unicode
+    from sqlalchemy import Unicode
+    from sqlalchemy.orm import Mapped, mapped_column
+
 
     from .database import Base
 
@@ -166,10 +171,10 @@ You can declare your models as you usually would with SQLAlchemy, just inherit f
 
         __tablename__ = "users"
 
-        id = Column("id", Integer, primary_key=True)
-        name = Column(Unicode(254), index=True, unique=True, nullable=False)
-        full_name = Column(Unicode(254), nullable=False)
-        timezone = Column(Unicode(127), nullable=True)
+        id: Mapped[int] = mapped_column(primary_key=True)
+        name: Mapped[str] = mapped_column(Unicode(254), index=True, unique=True)
+        full_name: Mapped[str] = mapped_column(Unicode(254))
+        timezone: Mapped[str] | None = mapped_column(Unicode(127))
 
 Note: these models do not depend on the Flask extension, only the main part of sqlalchemy-helpers.
 They will import and work just fine without Flask.
@@ -199,13 +204,15 @@ by ID or returning a 404 error if not found::
 
     # views.py
 
+    from sqlalchemy import select
+
     from .database import db, get_or_404
     from .models import User
 
 
     @bp.route("/")
     def root():
-        users = db.session.query(User).all()
+        users = db.session.scalars(select(User)).all()
         return render_template("index.html", users=users)
 
 

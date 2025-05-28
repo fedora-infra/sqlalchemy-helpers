@@ -70,6 +70,7 @@ pydantic = "*"
 pydantic-settings = "*"
 reuse = "*"
 poetry-plugin-export = "^1.8.0"
+mypy = "^1.15.0"
 
 [tool.poetry.extras]
 flask = ["Flask"]
@@ -107,6 +108,7 @@ asyncio_mode = "auto"
 testpaths = [
     "tests",
 ]
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.run]
 branch = true
@@ -120,6 +122,9 @@ fail_under = 100
 exclude_lines = [
     "pragma: no cover",
     "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
 ]
 omit = [
     "sqlalchemy_helpers/__init__.py",
@@ -178,3 +183,11 @@ all_bullets = true
   directory = "author"
   name = "Contributors"
   showcontent = true
+
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["flask.*", "werkzeug.*"]
+follow_untyped_imports = true

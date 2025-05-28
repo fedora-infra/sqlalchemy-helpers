@@ -19,7 +19,7 @@ from sqlalchemy_helpers.aio import (
 )
 from sqlalchemy_helpers.manager import DatabaseStatus, exists_in_db, SyncResult
 
-from .models import User
+from .models import AsyncUser
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ async def test_manager_create(manager):
     async with manager.Session() as session:
         assert (await manager.get_current_revision(session)) == "dummy"
         conn = await session.connection()
-        assert await conn.run_sync(exists_in_db, "users")
+        assert await conn.run_sync(exists_in_db, "users_async")
 
 
 async def test_manager_get_status(manager):
@@ -84,7 +84,7 @@ async def test_manager_drop(manager):
     await manager.create()
     await manager.drop()
     async with manager.engine.connect() as conn:
-        assert not (await conn.run_sync(exists_in_db, "users"))
+        assert not (await conn.run_sync(exists_in_db, "users_async"))
     async with manager.Session() as session:
         assert (await manager.get_current_revision(session)) is None
 
@@ -122,36 +122,36 @@ def test_async_from_sync_url(in_url, out_url_or_exc):
 
 async def test_async_get_by_pk(manager, async_session):
     await manager.create()
-    user = User(name="dummy")
+    user = AsyncUser(name="dummy")
     async_session.add(user)
     await async_session.commit()
-    user2 = await get_by_pk(user.id, session=async_session, model=User)
-    assert isinstance(user2, User)
+    user2 = await get_by_pk(user.id, session=async_session, model=AsyncUser)
+    assert isinstance(user2, AsyncUser)
     assert user.id == user2.id
 
 
 async def test_async_get_or_create(manager, async_session):
     await manager.create()
-    user, created = await get_or_create(async_session, User, name="dummy")
+    user, created = await get_or_create(async_session, AsyncUser, name="dummy")
     assert created is True
-    assert isinstance(user, User)
+    assert isinstance(user, AsyncUser)
     assert user.name == "dummy"
-    user2, created = await get_or_create(async_session, User, name="dummy")
+    user2, created = await get_or_create(async_session, AsyncUser, name="dummy")
     assert created is False
-    assert isinstance(user2, User)
+    assert isinstance(user2, AsyncUser)
     assert user.id == user2.id
 
 
 async def test_get_or_create_property(manager, async_session):
     await manager.create()
-    user, created = await User.get_or_create(async_session, name="dummy")
+    user, created = await AsyncUser.get_or_create(async_session, name="dummy")
     assert created is True
     assert user.name == "dummy"
-    user2, created = await User.get_or_create(async_session, name="dummy")
+    user2, created = await AsyncUser.get_or_create(async_session, name="dummy")
     assert created is False
     assert user.id == user2.id
     assert user.name == "dummy"
-    user2, created = await User.get_or_create(async_session, name="dummy")
+    user2, created = await AsyncUser.get_or_create(async_session, name="dummy")
     assert created is False
     assert user.id == user2.id
 
@@ -159,24 +159,24 @@ async def test_get_or_create_property(manager, async_session):
 async def test_async_update_or_create(manager, async_session):
     await manager.create()
     user, created = await update_or_create(
-        async_session, User, name="dummy", defaults={"full_name": "Dummy"}
+        async_session, AsyncUser, name="dummy", defaults={"full_name": "Dummy"}
     )
     assert created is True
-    assert isinstance(user, User)
+    assert isinstance(user, AsyncUser)
     assert user.name == "dummy"
     assert user.full_name == "Dummy"
     # Now update it
     user2, created = await update_or_create(
-        async_session, User, name="dummy", defaults={"full_name": "New Value"}
+        async_session, AsyncUser, name="dummy", defaults={"full_name": "New Value"}
     )
     assert created is False
-    assert isinstance(user2, User)
+    assert isinstance(user2, AsyncUser)
     assert user.id == user2.id
     assert user.full_name == "New Value"
     # Test create_defaults
     user3, created = await update_or_create(
         async_session,
-        User,
+        AsyncUser,
         name="dummy2",
         defaults={"full_name": "Wrong Value"},
         create_defaults={"full_name": "Correct Value"},
@@ -197,5 +197,5 @@ async def test_async_update_or_create_property(app, monkeypatch):
         defaults={"full_name": "Dummy"},
         create_defaults={"full_name": "Initial Dummy"},
     )
-    await User.update_or_create(session, **kwargs)
-    update_or_create.assert_called_once_with(session, model=User, **kwargs)
+    await AsyncUser.update_or_create(session, **kwargs)
+    update_or_create.assert_called_once_with(session, model=AsyncUser, **kwargs)

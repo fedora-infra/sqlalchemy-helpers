@@ -6,45 +6,44 @@
 Database management.
 
 This must remain independent from any web framework.
-
-Attributes:
-    Base (object): SQLAlchemy's base class for models.
 """
 
 import enum
 import logging
 import os
 import warnings
-from contextlib import nullcontext
+from abc import ABCMeta, abstractmethod
+from contextlib import AbstractContextManager, nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
+from typing import Any, Callable, cast, TypeVar
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine, MetaData, select
 from sqlalchemy import event as sa_event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import DeclarativeBase, scoped_session, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, scoped_session, Session, sessionmaker
 
 
 _log = logging.getLogger(__name__)
 
+NAMING_CONVENTION = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
 
 class Base(DeclarativeBase):
-    """Base class for ORM objects with a naming convention."""
+    """SQLAlchemy's base class for models."""
 
-    metadata = MetaData(
-        naming_convention={
-            "ix": "ix_%(column_0_label)s",
-            "uq": "uq_%(table_name)s_%(column_0_name)s",
-            "ck": "ck_%(table_name)s_%(constraint_name)s",
-            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-            "pk": "pk_%(table_name)s",
-        }
-    )
+    metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 
 def get_base(*args: Any, **kwargs: Any) -> type[DeclarativeBase]:
@@ -56,13 +55,13 @@ def get_base(*args: Any, **kwargs: Any) -> type[DeclarativeBase]:
     return Base
 
 
-class DatabaseManager:
+class BaseDatabaseManager(metaclass=ABCMeta):
     """Helper for a SQLAlchemy and Alembic-powered database
 
     Args:
-        uri (str): the database URI
-        alembic_location (str): a path to the alembic directory
-        engine_args (dict): additional arguments passed to ``create_engine``
+        uri: the database URI
+        alembic_location: a path to the alembic directory
+        engine_args: additional arguments passed to ``create_engine``
 
     Attributes:
         alembic_cfg (alembic.config.Config): the Alembic configuration object
@@ -70,69 +69,115 @@ class DatabaseManager:
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, *, engine_args=None, base_model=None):
+    def __init__(
+        self,
+        uri: str,
+        alembic_location: str,
+        *,
+        engine_args: dict[str, Any] | None = None,
+        base_model: type[DeclarativeBase] | None = None,
+    ):
         self.engine = self._make_engine(uri, engine_args)
+        self._base_model = base_model or Base
+        # Alembic
+        self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
+        self.alembic_cfg.set_main_option("script_location", alembic_location)
+        self.alembic_cfg.set_main_option("sqlalchemy.url", uri.replace("%", "%%"))
+
+    @abstractmethod
+    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> Any: ...
+
+    def get_latest_revision(self) -> str | None:
+        """Get the most up-to-date alembic database revision available."""
+        script_dir = ScriptDirectory.from_config(self.alembic_cfg)
+        return script_dir.get_current_head()
+
+    def _compare_to_latest(self, current: str | None) -> "DatabaseStatus":
+        if current is None:
+            return DatabaseStatus.NO_INFO
+        latest = self.get_latest_revision()
+        if current != latest:
+            return DatabaseStatus.UPGRADE_AVAILABLE
+        return DatabaseStatus.UP_TO_DATE
+
+
+class DatabaseManager(BaseDatabaseManager):
+    """Helper for a SQLAlchemy and Alembic-powered database
+
+    Args:
+        uri: the database URI
+        alembic_location: a path to the alembic directory
+        engine_args: additional arguments passed to ``create_engine``
+
+    Attributes:
+        alembic_cfg (alembic.config.Config): the Alembic configuration object
+        engine (sqlalchemy.engine.Engine): the SQLAlchemy Engine instance
+        Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
+    """
+
+    def __init__(
+        self,
+        uri: str,
+        alembic_location: str,
+        *,
+        engine_args: dict[str, Any] | None = None,
+        base_model: type[DeclarativeBase] | None = None,
+    ):
+        super().__init__(uri, alembic_location, engine_args=engine_args, base_model=base_model)
+        self.engine = cast(Engine, self.engine)
         self.Session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
-        self._base_model = base_model or Base
         self._base_model.get_by_pk = session_and_model_property(self.Session, get_by_pk)
         self._base_model.get_one = session_and_model_property(self.Session, get_one)
         self._base_model.get_or_create = session_and_model_property(self.Session, get_or_create)
         self._base_model.update_or_create = session_and_model_property(
             self.Session, update_or_create
         )
-        # Alembic
-        self.alembic_cfg = AlembicConfig(os.path.join(alembic_location, "alembic.ini"))
-        self.alembic_cfg.set_main_option("script_location", alembic_location)
-        self.alembic_cfg.set_main_option("sqlalchemy.url", uri.replace("%", "%%"))
 
-    def _make_engine(self, uri, engine_args):
+    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> Engine:
         """Create the SQLAlchemy engine.
 
         Args:
-            uri (str): the database URI
-            engine_args (dict or None): additional arguments passed to ``create_engine``
+            uri: the database URI
+            engine_args: additional arguments passed to ``create_engine``
 
         Returns:
-            sqlalchemy.Engine: the SQLAlchemy engine
+            the SQLAlchemy engine
         """
         engine_args = engine_args or {}
         engine_args["url"] = uri
         return create_engine(**engine_args)
 
-    def _get_session_context(self, session=None):
+    def _get_session_context(
+        self, session: Session | None = None
+    ) -> AbstractContextManager[Session]:
         if session is None:
             return self.Session()
         else:
             return nullcontext(session)
 
-    def get_current_revision(self, session=None):
+    def get_current_revision(self, session: Session | None = None) -> str | None:
         """Get the current alembic database revision.
 
         Args:
-            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+            session: the session instance to use, or ``None``
                 if one is to be created.
         """
         with self._get_session_context(session) as session:
             alembic_context = MigrationContext.configure(session.connection())
             return alembic_context.get_current_revision()
 
-    def get_latest_revision(self):
-        """Get the most up-to-date alembic database revision available."""
-        script_dir = ScriptDirectory.from_config(self.alembic_cfg)
-        return script_dir.get_current_head()
-
-    def create(self):
+    def create(self) -> None:
         """Create the database tables."""
         self._base_model.metadata.create_all(bind=self.engine)
         command.stamp(self.alembic_cfg, "head")
 
-    def upgrade(self, target="head"):
+    def upgrade(self, target: str = "head") -> None:
         """Upgrade the database schema."""
         command.upgrade(self.alembic_cfg, target)
 
-    def drop(self):
+    def drop(self) -> None:
         """Drop all the database tables."""
         self._base_model.metadata.drop_all(bind=self.engine)
         # Also drop the Alembic version table
@@ -141,36 +186,29 @@ class DatabaseManager:
                 alembic_context = MigrationContext.configure(connection)
                 alembic_context._version.drop(bind=connection)
 
-    def get_status(self, session=None):
+    def get_status(self, session: Session | None = None) -> "DatabaseStatus":
         """Get the status of the database.
 
         Args:
-            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+            session: the session instance to use, or ``None``
                 if one is to be created.
 
         Returns:
-            DatabaseStatus member: see :class:`DatabaseStatus`."""
+            the database status, see :class:`DatabaseStatus`.
+        """
         with self._get_session_context(session) as session:
             current = self.get_current_revision(session=session)
         return self._compare_to_latest(current)
 
-    def _compare_to_latest(self, current):
-        if current is None:
-            return DatabaseStatus.NO_INFO
-        latest = self.get_latest_revision()
-        if current != latest:
-            return DatabaseStatus.UPGRADE_AVAILABLE
-        return DatabaseStatus.UP_TO_DATE
-
-    def sync(self, session=None):
+    def sync(self, session: Session | None = None) -> "SyncResult":
         """Create or update the database schema.
 
         Args:
-            session (sqlalchemy.Session or None): the session instance to use, or ``None``
+            session: the session instance to use, or ``None``
                 if one is to be created.
 
         Returns:
-            SyncResult member: see :class:`SyncResult`.
+            the result of the sync, see :class:`SyncResult`.
         """
         with self._get_session_context(session) as session:
             current_rev = self.get_current_revision(session)
@@ -212,7 +250,7 @@ class SyncResult(enum.Enum):
 
 
 @sa_event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
+def set_sqlite_pragma(dbapi_connection: Any, connection_record: Any) -> None:
     """Automatically activate foreign keys on SQLite databases."""
     if isinstance(dbapi_connection, SQLite3Connection):  # pragma: no cover
         cursor = dbapi_connection.cursor()
@@ -222,8 +260,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 # Query helpers
 
+M = TypeVar("M")
 
-def get_by_pk(pk, *, session, model):
+
+def get_by_pk(pk: Any, *, session: Session, model: type[M]) -> M | None:
     """Get a model instance using its primary key.
 
     Example: ``user = get_by_pk(42, session=session, model=User)``
@@ -231,15 +271,15 @@ def get_by_pk(pk, *, session, model):
     return session.get(model, pk)
 
 
-def get_one(session, model, **attrs):
+def get_one(session: Session, model: type[M], **attrs: Any) -> M:
     """Get a model instance using filters.
 
     Example: ``user = get_one(session, User, name="foo")``
     """
-    return session.query(model).filter_by(**attrs).one()
+    return session.scalars(select(model).filter_by(**attrs)).one()
 
 
-def get_or_create(session, model, **attrs):
+def get_or_create(session: Session, model: type[M], **attrs: Any) -> tuple[M, bool]:
     """Function like Django's ``get_or_create()`` method.
 
     It will return a tuple, the first argument being the instance and the
@@ -257,7 +297,13 @@ def get_or_create(session, model, **attrs):
         return obj, True
 
 
-def update_or_create(session, model, defaults=None, create_defaults=None, **attrs):
+def update_or_create(
+    session: Session,
+    model: type[M],
+    defaults: dict[str, Any] | None = None,
+    create_defaults: dict[str, Any] | None = None,
+    **filter_attrs: Any,
+) -> tuple[M, bool]:
     """Function like Django's ``update_or_create()`` method.
 
     It will return a tuple, the first argument being the instance and the
@@ -272,12 +318,12 @@ def update_or_create(session, model, defaults=None, create_defaults=None, **attr
     defaults = defaults or {}
     create_defaults = create_defaults or defaults
     try:
-        obj = get_one(session=session, model=model, **attrs)
+        obj = get_one(session=session, model=model, **filter_attrs)
         for key, value in defaults.items():
             setattr(obj, key, value)
         return obj, False
     except NoResultFound:
-        new_attrs = attrs.copy()
+        new_attrs = filter_attrs.copy()
         new_attrs.update(create_defaults)
         obj = model(**new_attrs)
         session.add(obj)
@@ -285,23 +331,23 @@ def update_or_create(session, model, defaults=None, create_defaults=None, **attr
         return obj, True
 
 
-def session_and_model_property(Session, func):
+def session_and_model_property(Session: scoped_session[Session], func: Callable[..., Any]) -> Any:
     """Add a model property that uses the database session."""
 
     # https://docs.python.org/3/howto/descriptor.html
     class accessor:
-        def __get__(self, obj, objtype=None):
+        def __get__(self, obj: Any, objtype: type[DeclarativeBase] | None = None) -> Any:
             return partial(func, session=Session(), model=objtype)
 
     return accessor()
 
 
-def model_property(func):
+def model_property(func: Callable[..., Any]) -> Any:
     """Add a model property to call a function that uses the database model."""
 
     # https://docs.python.org/3/howto/descriptor.html
     class accessor:
-        def __get__(self, obj, objtype=None):
+        def __get__(self, obj: Any, objtype: type[DeclarativeBase] | None = None) -> Any:
             return partial(func, model=objtype)
 
     return accessor()
@@ -310,7 +356,7 @@ def model_property(func):
 # Migration helpers
 
 
-def is_sqlite(bind):
+def is_sqlite(bind: Engine) -> bool:
     """Check whether the database is SQLite.
 
     Returns:
@@ -318,16 +364,16 @@ def is_sqlite(bind):
     return bind.dialect.name == "sqlite"
 
 
-def exists_in_db(bind, tablename, columnname=None):
+def exists_in_db(bind: Engine, tablename: str, columnname: str | None = None) -> bool:
     """Check whether a table and optionally a column exist in the database.
 
     Args:
-        bind (sqlalchemy.engine.Engine): the database engine or connection.
-        tablename (str): the table to look for.
-        columnname (str, optional): the column to look for, if any. Defaults to None.
+        bind: the database engine or connection.
+        tablename: the table to look for.
+        columnname: the column to look for, if any. Defaults to None.
 
     Returns:
-        bool: Whether the database (and column) exist.
+        Whether the database (and column) exist.
     """
     md = MetaData()
     md.reflect(bind=bind)

@@ -7,6 +7,7 @@ FastAPI integration of database management.
 """
 
 from collections.abc import AsyncIterator
+from typing import Any
 
 import click
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +16,7 @@ from .aio import AsyncDatabaseManager
 from .manager import SyncResult
 
 
-def manager_from_config(db_settings, *args, **kwargs):
+def manager_from_config(db_settings: Any, *args: Any, **kwargs: Any) -> AsyncDatabaseManager:
     """Get the database manager using the Flask app's configuration."""
     if not isinstance(db_settings, dict):
         try:
@@ -25,12 +26,12 @@ def manager_from_config(db_settings, *args, **kwargs):
     uri = str(db_settings["sqlalchemy"]["url"])
     alembic_location = str(db_settings["alembic"]["migrations_path"])
     manager = AsyncDatabaseManager(
-        uri, alembic_location, engine_args=db_settings["sqlalchemy"], *args, **kwargs
+        uri, alembic_location, *args, engine_args=db_settings["sqlalchemy"], **kwargs
     )
     return manager
 
 
-async def syncdb(db_settings):
+async def syncdb(db_settings: Any) -> None:
     """Run :meth:`DatabaseManager.sync` on the command-line."""
     manager = manager_from_config(db_settings)
     result = await manager.sync()
@@ -44,7 +45,7 @@ async def syncdb(db_settings):
         click.echo(f"Unexpected sync result: {result}", err=True)
 
 
-async def make_db_session(manager) -> AsyncIterator[AsyncSession]:
+async def make_db_session(manager: AsyncDatabaseManager) -> AsyncIterator[AsyncSession]:
     """Generate database sessions for FastAPI request handlers.
 
     This lets users declare the session as a dependency in request handler

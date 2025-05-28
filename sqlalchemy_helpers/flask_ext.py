@@ -7,16 +7,21 @@ Flask integration of database management.
 """
 
 import os
+from typing import Any, Callable, cast, TypeVar
 
 import click
-from flask import abort, current_app, has_app_context
+from flask import abort, current_app, Flask, has_app_context
 from flask.cli import AppGroup
+from sqlalchemy.orm import DeclarativeBase, Session
+from sqlalchemy.sql.expression import Select
 from werkzeug.utils import find_modules, import_string
 
 from .manager import DatabaseManager, SyncResult
 
 
-def _get_manager(engine_args=None, app=None):
+def _get_manager(
+    engine_args: dict[str, Any] | None = None, app: Flask | None = None
+) -> DatabaseManager:
     """Get the database manager using the Flask app's configuration."""
     app = app or current_app
     uri = app.config["SQLALCHEMY_DATABASE_URI"]
@@ -26,7 +31,7 @@ def _get_manager(engine_args=None, app=None):
     return manager
 
 
-def _syncdb():
+def _syncdb() -> None:
     """Run :meth:`DatabaseManager.sync` on the command-line."""
     manager = _get_manager()
     result = manager.sync()
@@ -51,13 +56,13 @@ class DatabaseExtension:
     _app_manager_name = "_sqlah_database_manager"
     _app_base_model_name = "_sqlah_base_model"
 
-    def __init__(self, app=None, base_model=None):
+    def __init__(self, app: Flask | None = None, base_model: DeclarativeBase | None = None):
         self.app = app
         self._base_model = base_model
         if app is not None:
             self.init_app(app, base_model=self._base_model)
 
-    def init_app(self, app, base_model=None):
+    def init_app(self, app: Flask, base_model: DeclarativeBase | None = None) -> None:
         """Initialize the extention on the provided Flask app
 
         Args:
@@ -92,12 +97,12 @@ class DatabaseExtension:
             # It's just a module, importing it is enough
             import_string(models_location)
 
-    def teardown(self, exception):
+    def teardown(self, exception: BaseException | None) -> None:
         """Close the database connection at the end of each requests."""
         if self._app_manager_name in current_app.extensions:
             current_app.extensions[self._app_manager_name].Session.remove()
 
-    def before_request(self):
+    def before_request(self) -> None:
         """Prepare the database manager at the start of each request.
 
         This is necessary to allow access to the ``Model.get_*`` methods.
@@ -106,18 +111,22 @@ class DatabaseExtension:
         self.manager  # noqa: B018
 
     @property
-    def session(self):
+    def session(self) -> Session | None:
         """sqlalchemy.session.Session: the database Session instance to use."""
-        return self.manager.Session()
+        manager = self.manager
+        if manager is None:
+            return None
+        else:
+            return manager.Session()
 
     @property
-    def manager(self):
+    def manager(self) -> DatabaseManager | None:
         """DatabaseManager: the instance of the database manager."""
         try:
             if self._app_manager_name not in current_app.extensions:
                 current_app.extensions[self._app_manager_name] = _get_manager()
 
-            return current_app.extensions[self._app_manager_name]
+            return cast(DatabaseManager, current_app.extensions[self._app_manager_name])
         except RuntimeError:
             # RuntimeError: Working outside of application context.
             return None
@@ -125,29 +134,37 @@ class DatabaseExtension:
 
 # View helpers
 
+M = TypeVar("M")
 
-def get_or_404(Model, pk, description=None):
+
+def get_or_404(Model: type[M], pk: Any, description: str | None = None) -> M:
     """Like ``query.get`` but aborts with 404 if not found.
 
     Args:
-        Model (manager.Base): a model class.
-        pk (int or str): the primary key of the desired record.
-        description (str, optional): a message for the 404 error if not found.
+        Model: a model class.
+        pk: the primary key of the desired record.
+        description: a message for the 404 error if not found.
     """
-    rv = Model.get_by_pk(pk)
+    rv: M | None = Model.get_by_pk(pk)  # type: ignore
     if rv is None:
         abort(404, description=description)
     return rv
 
 
-def first_or_404(query, description=None):
-    """Like ``query.first`` but aborts with 404 if not found.
+def first_or_404(
+    query: Select[tuple[M]], description: str | None = None, session: Session | None = None
+) -> M:
+    """Like ``session.scalars(query).first()`` but aborts with 404 if not found.
 
     Args:
-        query (sqlalchemy.orm.Query): a query to retrieve.
-        description (str, optional): a message for the 404 error if no records are found.
+        query: a query to retrieve.
+        description: a message for the 404 error if no records are found.
+        session: the database session, or ``None`` to use the default session.
     """
-    rv = query.first()
+    if not session:
+        manager: DatabaseManager = current_app.extensions[DatabaseExtension._app_manager_name]
+        session = manager.Session()
+    rv = session.scalars(query).first()
     if rv is None:
         abort(404, description=description)
     return rv
@@ -156,16 +173,16 @@ def first_or_404(query, description=None):
 # Useful in alembic's env.py
 
 
-def get_url_from_app(app_factory):
+def get_url_from_app(app_factory: Callable[..., Flask]) -> str:
     """Get the DB URI from the app configuration
 
     Create the application if it hasn't been created yet. This is useful in Alembic's ``env.py``.
 
-    Args: app_factory (callable): the Flask application factory, to be called if this function is
+    Args: app_factory: the Flask application factory, to be called if this function is
         called outside of and application context.
     """
     if not has_app_context():
         app = app_factory()
-        return app.config["SQLALCHEMY_DATABASE_URI"]
+        return cast(str, app.config["SQLALCHEMY_DATABASE_URI"])
     else:
-        return current_app.config["SQLALCHEMY_DATABASE_URI"]
+        return cast(str, current_app.config["SQLALCHEMY_DATABASE_URI"])

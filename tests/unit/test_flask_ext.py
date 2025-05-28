@@ -5,7 +5,9 @@
 from functools import partial
 
 import alembic
+import pytest
 from flask import jsonify
+from sqlalchemy import select
 
 from sqlalchemy_helpers.flask_ext import (
     DatabaseExtension,
@@ -13,7 +15,7 @@ from sqlalchemy_helpers.flask_ext import (
     get_or_404,
     get_url_from_app,
 )
-from sqlalchemy_helpers.manager import exists_in_db
+from sqlalchemy_helpers.manager import DatabaseManager, exists_in_db
 
 from .models import User
 
@@ -32,7 +34,7 @@ def test_flask_ext_basic_view(flask_app, flask_client):
 
     @flask_app.route("/")
     def view():
-        users = db.session.query(User).all()
+        users = db.session.scalars(select(User)).all()
         return jsonify([u.name for u in users])
 
     response = flask_client.get("/")
@@ -63,7 +65,7 @@ def test_flask_ext_first_or_404(flask_app, flask_client):
 
     @flask_app.route("/user/<name>")
     def view(name):
-        user = first_or_404(db.session.query(User).filter_by(name=name), "no such user")
+        user = first_or_404(select(User).filter_by(name=name), "no such user")
         return jsonify(user.id)
 
     response = flask_client.get("/user/dummy")
@@ -72,6 +74,19 @@ def test_flask_ext_first_or_404(flask_app, flask_client):
     response = flask_client.get("/user/nobody")
     assert response.status_code == 404
     assert "<p>no such user</p>" in response.get_data(as_text=True)
+
+
+def test_flask_ext_first_or_404_custom_session(app):
+    manager = DatabaseManager(app["db_uri"], app["alembic_dir"])
+    manager.create()
+    session = manager.Session()
+    session.add(User(name="dummy"))
+    session.commit()
+    try:
+        first_or_404(select(User).filter_by(name="dummy"), "no such user", session=session)
+    except RuntimeError as e:
+        # If no session is given, calling current_app outside the app context will raise RuntimeError
+        pytest.fail(e)
 
 
 def test_flask_ext_script(flask_app, mocker):
@@ -103,6 +118,7 @@ def test_flask_ext_script(flask_app, mocker):
 def test_flask_ext_outside_context(flask_app):
     db = DatabaseExtension(flask_app)
     assert db.manager is None
+    assert db.session is None
 
 
 def test_flask_ext_get_url(flask_app_factory):

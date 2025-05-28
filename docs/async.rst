@@ -7,8 +7,7 @@ The sqlalchemy-helpers library supports `AsyncIO connections`_ in SQLAlchemy and
 
 .. _AsyncIO connections: https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
 
-All the models must still inherit from the :class:`sqlalchemy_helpers.manager.Base` class.
-As a convenience, it is also exported in the :mod:`sqlalchemy_helpers.aio` module.
+All the models must inherit from the :class:`sqlalchemy_helpers.aio.Base` class.
 
 
 Usage and differences
@@ -160,14 +159,15 @@ You can declare your models as you usually would with SQLAlchemy, just inherit f
 
     # models.py
 
-    from sqlalchemy import Column, Integer, UnicodeText
+    from sqlalchemy import UnicodeText
+    from sqlalchemy.orm import Mapped, mapped_column
     from .database import Base
 
     class User(Base):
         __tablename__ = "users"
 
-        id = Column(Integer, primary_key=True, nullable=False)
-        name = Column(UnicodeText, nullable=False, unique=True)
+        id: Mapped[int] = mapped_column(primary_key=True)
+        name: Mapped[str] = mapped_column(UnicodeText, unique=True)
 
 Note: these models do not depend on the FastAPI extension, only the main part of sqlalchemy-helpers.
 They will import and work just fine without FastAPI.

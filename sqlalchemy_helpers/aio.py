@@ -6,36 +6,43 @@
 Database management (async).
 
 This must remain independent from any web framework.
-
-Attributes:
-    Base (object): SQLAlchemy's base class for models.
 """
 
 import logging
 from functools import wraps
-from typing import Union
+from typing import Any, Callable, cast, TypeVar, Union
 
 from alembic import command
 from alembic.migration import MigrationContext
 from sqlalchemy import exc as sa_exc
-from sqlalchemy import select
-from sqlalchemy.engine import make_url, URL
+from sqlalchemy import MetaData, select
+from sqlalchemy.engine import Connection, make_url, URL
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncAttrs,
+    AsyncEngine,
+    AsyncSession,
     create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase
 
-from .manager import Base as SyncBase
-from .manager import DatabaseManager, model_property, SyncResult
+from .manager import (
+    BaseDatabaseManager,
+    DatabaseStatus,
+    model_property,
+    NAMING_CONVENTION,
+    SyncResult,
+)
 
 
 _log = logging.getLogger(__name__)
 
 
-class Base(AsyncAttrs, SyncBase):
-    pass
+class Base(AsyncAttrs, DeclarativeBase):
+    """SQLAlchemy's base class for async models."""
+
+    metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 
 def _async_from_sync_url(url: Union[URL, str]) -> URL:
@@ -59,13 +66,16 @@ def _async_from_sync_url(url: Union[URL, str]) -> URL:
     return sync_url.set(drivername=f"{dialect}+{driver}")
 
 
-class AsyncDatabaseManager(DatabaseManager):
+R = TypeVar("R")
+
+
+class AsyncDatabaseManager(BaseDatabaseManager):
     """Helper for a SQLAlchemy and Alembic-powered database, asynchronous version.
 
     Args:
-        uri (str): the database URI
-        alembic_location (str): a path to the alembic directory
-        engine_args (dict): additional arguments passed to ``create_async_engine``
+        uri: the database URI
+        alembic_location: a path to the alembic directory
+        engine_args: additional arguments passed to ``create_async_engine``
 
     Attributes:
         alembic_cfg (alembic.config.Config): the Alembic configuration object
@@ -73,8 +83,16 @@ class AsyncDatabaseManager(DatabaseManager):
         Session (sqlalchemy.orm.scoped_session): the SQLAlchemy scoped session factory
     """
 
-    def __init__(self, uri, alembic_location, *, engine_args=None, base_model=None):
+    def __init__(
+        self,
+        uri: str,
+        alembic_location: str,
+        *,
+        engine_args: dict[str, Any] | None = None,
+        base_model: type[DeclarativeBase] | None = None,
+    ):
         super().__init__(uri, alembic_location, engine_args=engine_args, base_model=base_model)
+        self.engine = cast(AsyncEngine, self.engine)
         self.Session = async_sessionmaker(expire_on_commit=False, bind=self.engine, future=True)
         self._base_model = base_model or Base
         self._base_model.get_by_pk = model_property(get_by_pk)
@@ -82,23 +100,23 @@ class AsyncDatabaseManager(DatabaseManager):
         self._base_model.get_or_create = model_property(get_or_create)
         self._base_model.update_or_create = model_property(update_or_create)
 
-    def _make_engine(self, uri, engine_args):
+    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> AsyncEngine:
         """Create the SQLAlchemy engine.
 
         Args:
-            uri (str): the database URI
-            engine_args (dict or None): additional arguments passed to ``create_async_engine``
+            uri: the database URI
+            engine_args: additional arguments passed to ``create_async_engine``
 
         Returns:
-            sqlalchemy.ext.asyncio.AsyncEngine: the SQLAlchemy engine
+            the SQLAlchemy async engine
         """
         engine_args = engine_args or {}
         engine_args["url"] = _async_from_sync_url(uri)
         return create_async_engine(**engine_args)
 
-    def configured_connection(self, f):
+    def configured_connection(self, f: Callable[[Connection], R]) -> Callable[[Connection], R]:
         @wraps(f)
-        def wrapper(sync_connection):
+        def wrapper(sync_connection: Connection) -> R:
             self.alembic_cfg.attributes["connection"] = sync_connection
             try:
                 return f(sync_connection)
@@ -107,7 +125,7 @@ class AsyncDatabaseManager(DatabaseManager):
 
         return wrapper
 
-    async def get_current_revision(self, session):
+    async def get_current_revision(self, session: AsyncSession) -> str | None:
         """Get the current alembic database revision."""
         alembic_context = MigrationContext.configure(
             url=self.alembic_cfg.get_main_option("sqlalchemy.url")
@@ -117,38 +135,38 @@ class AsyncDatabaseManager(DatabaseManager):
         except sa_exc.DatabaseError:
             # Table alembic_version does not exist yet
             return None
-        current_versions = [row[0] for row in result]
+        current_versions = cast(list[str], [row[0] for row in result])
         if len(current_versions) != 1:
             # Database is not setup
             return None
         return current_versions[0]
 
-    async def create(self):
+    async def create(self) -> None:
         """Create the database tables."""
 
         @self.configured_connection
-        def _run_stamp(connection):
+        def _run_stamp(connection: Connection) -> None:
             self._base_model.metadata.create_all(connection)
             command.stamp(self.alembic_cfg, "head")
 
         async with self.engine.begin() as conn:
             await conn.run_sync(_run_stamp)
 
-    async def upgrade(self, target="head"):
+    async def upgrade(self, target: str = "head") -> None:
         """Upgrade the database schema."""
 
         @self.configured_connection
-        def _run_upgrade(_conn):
+        def _run_upgrade(_conn: Connection) -> None:
             command.upgrade(self.alembic_cfg, target)
 
         async with self.engine.begin() as conn:
             await conn.run_sync(_run_upgrade)
 
-    async def drop(self):
+    async def drop(self) -> None:
         """Drop all the database tables."""
 
         @self.configured_connection
-        def _run_drop(connection):
+        def _run_drop(connection: Connection) -> None:
             self._base_model.metadata.drop_all(connection)
             # Also drop the Alembic version table
             alembic_context = MigrationContext.configure(connection)
@@ -157,20 +175,20 @@ class AsyncDatabaseManager(DatabaseManager):
         async with self.engine.begin() as conn:
             await conn.run_sync(_run_drop)
 
-    async def get_status(self):
+    async def get_status(self) -> DatabaseStatus:
         """Get the status of the database.
 
         Returns:
-            DatabaseStatus member: see :class:`DatabaseStatus`."""
+            the status of the database, see :class:`DatabaseStatus`."""
         async with self.Session() as session:
             current = await self.get_current_revision(session=session)
         return self._compare_to_latest(current)
 
-    async def sync(self):
+    async def sync(self) -> SyncResult:
         """Create or update the database schema.
 
         Returns:
-            SyncResult member: see :class:`SyncResult`.
+            the result of the sync, see :class:`SyncResult`.
         """
         async with self.Session() as session:
             current_rev = await self.get_current_revision(session)
@@ -188,33 +206,42 @@ class AsyncDatabaseManager(DatabaseManager):
 
 # Query helpers
 
+M = TypeVar("M")
 
-async def get_by_pk(pk, *, session, model):
+
+async def get_by_pk(pk: Any, *, session: AsyncSession, model: type[M]) -> M | None:
     """Get a model instance using its primary key.
 
-    Example: ``user = get_by_pk(42, session=session, model=User)``
+    Example:
+
+        user = get_by_pk(42, session=session, model=User)
     """
     return await session.get(model, pk)
 
 
-async def get_one(session: AsyncSession, model, **attrs) -> "Base":
+async def get_one(session: AsyncSession, model: type[M], **attrs: Any) -> M:
     """Get an object from the datbase.
 
-    :param session: The SQLAlchemy session to use
-    :param model: The SQLAlchemy model to query
-    :return: the object
+    Args:
+        session: The SQLAlchemy session to use
+        model: The SQLAlchemy model to query
+
+    Returns:
+        the model instance
     """
     return (await session.execute(select(model).filter_by(**attrs))).scalar_one()
 
 
-async def get_or_create(session, model, **attrs):
+async def get_or_create(session: AsyncSession, model: type[M], **attrs: Any) -> tuple[M, bool]:
     """Function like Django's ``get_or_create()`` method.
 
     It will return a tuple, the first argument being the instance and the
     second being a boolean: ``True`` if the instance has been created and
     ``False`` otherwise.
 
-    Example: ``user, created = get_or_create(session, User, name="foo")``
+    Example::
+
+        user, created = get_or_create(session, User, name="foo")
     """
     try:
         obj = await get_one(session=session, model=model, **attrs)
@@ -229,7 +256,13 @@ async def get_or_create(session, model, **attrs):
     return obj, created
 
 
-async def update_or_create(session, model, defaults=None, create_defaults=None, **attrs):
+async def update_or_create(
+    session: AsyncSession,
+    model: type[M],
+    defaults: dict[str, Any] | None = None,
+    create_defaults: dict[str, Any] | None = None,
+    **filter_attrs: Any,
+) -> tuple[M, bool]:
     """Function like Django's ``update_or_create()`` method.
 
     It will return a tuple, the first argument being the instance and the
@@ -244,12 +277,12 @@ async def update_or_create(session, model, defaults=None, create_defaults=None, 
     defaults = defaults or {}
     create_defaults = create_defaults or defaults
     try:
-        obj = await get_one(session=session, model=model, **attrs)
+        obj = await get_one(session=session, model=model, **filter_attrs)
         for key, value in defaults.items():
             setattr(obj, key, value)
         return obj, False
     except NoResultFound:
-        new_attrs = attrs.copy()
+        new_attrs = filter_attrs.copy()
         new_attrs.update(create_defaults)
         obj = model(**new_attrs)
         session.add(obj)
