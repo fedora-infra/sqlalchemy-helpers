@@ -8,6 +8,56 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## Version [2.0.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v2.0.0)
+
+This is a major version. The main backwards-incompatible change is that you now
+need to import `Base` instead of calling `get_base()` as the base class for your
+models.
+
+If you are using the synchronous version:
+
+```diff
+-from sqlalchemy_helpers import get_base
++from sqlalchemy_helpers import Base
+```
+
+If you are using the asynchronous version:
+
+```diff
+-from sqlalchemy_helpers import Base
++from sqlalchemy_helpers.aio import Base
+```
+
+Or if you are using the asynchronous version and were manually mixing in the `AsyncAttrs` class:
+
+```diff
+ from sqlalchemy.ext.asyncio import AsyncAttrs
+-from sqlalchemy_helpers import get_base
++from sqlalchemy_helpers.aio import Base
+
+-Base = get_base(cls=AsyncAttrs)
+```
+
+This version also requires SQLAlchemy >= 2.0, and Pydantic >= 2.0 if you are using the [FastAPI integration](/async.rst).
+
+### Features
+
+- Deprecate `get_base()` to use `DeclarativeBase` directly.
+  Also add an `AsyncAttrs`-enabled base class to the `aio` module.
+  ([9d5f479](https://github.com/fedora-infra/sqlalchemy-helpers/commit/9d5f479))
+- Type-hint the codebase and use the new SQLAlchemy constructs
+  ([94febb3](https://github.com/fedora-infra/sqlalchemy-helpers/commit/94febb3))
+- Add a `fastapi` extra ([4c393c2](https://github.com/fedora-infra/sqlalchemy-helpers/commit/4c393c2))
+
+### Dependency Changes
+
+- Require SQLAlchemy >= 2.0
+- Require Pydantic>=2.0 with FastAPI
+  ([4c393c2](https://github.com/fedora-infra/sqlalchemy-helpers/commit/4c393c2))
+- Drop support for Python 3.9 and SQLAlchemy 1.x, add support for Python 3.13
+  ([7a62f27](https://github.com/fedora-infra/sqlalchemy-helpers/commit/7a62f27))
+
+
 ## Version [1.0.2](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v1.0.2)
 
 Released on 2025-05-28. This is a bugfix release.
