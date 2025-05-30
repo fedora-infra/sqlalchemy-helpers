@@ -10,19 +10,19 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 import click
+from pydantic_settings import BaseSettings
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .aio import AsyncDatabaseManager
 from .manager import SyncResult
 
 
-def manager_from_config(db_settings: Any, *args: Any, **kwargs: Any) -> AsyncDatabaseManager:
-    """Get the database manager using the Flask app's configuration."""
+def manager_from_config(
+    db_settings: dict[str, Any] | BaseSettings, *args: Any, **kwargs: Any
+) -> AsyncDatabaseManager:
+    """Get the database manager using the FastAPI app's configuration."""
     if not isinstance(db_settings, dict):
-        try:
-            db_settings = db_settings.model_dump()  # Pydantic Settings >=2.0
-        except AttributeError:  # pragma: no cover
-            db_settings = db_settings.dict()  # Pydantic <2.0
+        db_settings = db_settings.model_dump()
     uri = str(db_settings["sqlalchemy"]["url"])
     alembic_location = str(db_settings["alembic"]["migrations_path"])
     manager = AsyncDatabaseManager(
@@ -31,7 +31,7 @@ def manager_from_config(db_settings: Any, *args: Any, **kwargs: Any) -> AsyncDat
     return manager
 
 
-async def syncdb(db_settings: Any) -> None:
+async def syncdb(db_settings: dict[str, Any] | BaseSettings) -> None:
     """Run :meth:`DatabaseManager.sync` on the command-line."""
     manager = manager_from_config(db_settings)
     result = await manager.sync()
