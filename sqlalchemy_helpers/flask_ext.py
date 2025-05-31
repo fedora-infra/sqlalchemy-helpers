@@ -111,25 +111,17 @@ class DatabaseExtension:
         self.manager  # noqa: B018
 
     @property
-    def session(self) -> Session | None:
+    def session(self) -> Session:
         """sqlalchemy.session.Session: the database Session instance to use."""
-        manager = self.manager
-        if manager is None:
-            return None
-        else:
-            return manager.Session()
+        return self.manager.Session()
 
     @property
-    def manager(self) -> DatabaseManager | None:
+    def manager(self) -> DatabaseManager:
         """DatabaseManager: the instance of the database manager."""
-        try:
-            if self._app_manager_name not in current_app.extensions:
-                current_app.extensions[self._app_manager_name] = _get_manager()
+        if self._app_manager_name not in current_app.extensions:
+            current_app.extensions[self._app_manager_name] = _get_manager()
 
-            return cast(DatabaseManager, current_app.extensions[self._app_manager_name])
-        except RuntimeError:
-            # RuntimeError: Working outside of application context.
-            return None
+        return cast(DatabaseManager, current_app.extensions[self._app_manager_name])
 
 
 # View helpers

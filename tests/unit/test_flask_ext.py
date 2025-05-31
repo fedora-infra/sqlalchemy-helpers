@@ -117,12 +117,6 @@ def test_flask_ext_script(flask_app: Flask, mocker: Any) -> None:
     assert "Unexpected sync result:" in result.output
 
 
-def test_flask_ext_outside_context(flask_app: Flask) -> None:
-    db = DatabaseExtension(flask_app)
-    assert db.manager is None
-    assert db.session is None
-
-
 def test_flask_ext_get_url(flask_app_factory: Callable[..., Flask]) -> None:
     factory = partial(
         flask_app_factory, {"SQLALCHEMY_DATABASE_URI": "sqlite:////outside/app/context"}
