@@ -5,6 +5,8 @@
 import os
 import shutil
 import sys
+from collections.abc import Generator
+from typing import Any
 
 import alembic
 import pytest
@@ -14,7 +16,7 @@ from sqlalchemy_helpers.manager import Base
 
 
 @pytest.fixture
-def full_app(tmpdir, app):
+def full_app(tmpdir: str, app: dict[str, Any]) -> Generator[None]:
     app_dir = os.path.join(tmpdir, "testapp")
     shutil.copytree(os.path.join(os.path.dirname(__file__), "app_fixture"), app_dir)
     # alembic setup
@@ -54,7 +56,7 @@ def full_app(tmpdir, app):
 
 
 @pytest.fixture
-def clear_metadata():
+def clear_metadata() -> Generator[None]:
     Base.metadata.clear()
     AsyncBase.metadata.clear()
     yield

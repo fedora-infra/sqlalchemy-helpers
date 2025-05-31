@@ -10,7 +10,7 @@ from importlib import import_module
 import alembic
 
 
-def test_config(full_app, clear_metadata, tmpdir):
+def test_config(full_app: None, clear_metadata: None, tmpdir: str) -> None:
     """Check that the app configuration is set."""
     app_module = import_module("testapp.app")
     config = app_module.app.config
@@ -19,17 +19,17 @@ def test_config(full_app, clear_metadata, tmpdir):
     assert config["DB_MODELS_LOCATION"] == "testapp.models"
 
 
-def test_models(full_app, clear_metadata, tmpdir):
+def test_models(full_app: None, clear_metadata: None, tmpdir: str) -> None:
     """Check that the models were properly imported."""
     import_module("testapp.app")
     manager_module = import_module("sqlalchemy_helpers.manager")
     assert "app_users" in manager_module.Base.metadata.tables
 
 
-def test_sync_db(full_app, tmpdir):
+def test_sync_db(full_app: None, tmpdir: str) -> None:
     """Check that the CLI extension works."""
 
-    def syncdb():
+    def syncdb() -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, "-m", "flask", "db", "sync"],
             check=True,

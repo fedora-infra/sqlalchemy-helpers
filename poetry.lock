@@ -53,7 +53,7 @@ tz = ["tzdata"]
 name = "annotated-types"
 version = "0.7.0"
 description = "Reusable constraint types to use with typing.Annotated"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53"},
@@ -1941,7 +1941,7 @@ files = [
 name = "pydantic"
 version = "2.11.5"
 description = "Data validation using Python type hints"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "pydantic-2.11.5-py3-none-any.whl", hash = "sha256:f9c26ba06f9747749ca1e5c94d6a85cb84254577553c8785576fd38fa64dc0f7"},
@@ -1962,7 +1962,7 @@ timezone = ["tzdata"]
 name = "pydantic-core"
 version = "2.33.2"
 description = "Core functionality for Pydantic validation and serialization"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "pydantic_core-2.33.2-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:2b3d326aaef0c0399d9afffeb6367d5e26ddc24d351dbc9c636840ac355dc5d8"},
@@ -2073,7 +2073,7 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 name = "pydantic-settings"
 version = "2.9.1"
 description = "Settings management using Pydantic"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "pydantic_settings-2.9.1-py3-none-any.whl", hash = "sha256:59b4f431b1defb26fe620c71a7d3968a710d719f5f4cdbbdb7926edeb770f6ef"},
@@ -2224,7 +2224,7 @@ test = ["pytest", "pytest-cov"]
 name = "python-dotenv"
 version = "1.1.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "python_dotenv-1.1.0-py3-none-any.whl", hash = "sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d"},
@@ -2960,7 +2960,7 @@ files = [
 name = "typing-inspection"
 version = "0.4.1"
 description = "Runtime typing introspection tools"
-optional = true
+optional = false
 python-versions = ">=3.9"
 files = [
     {file = "typing_inspection-0.4.1-py3-none-any.whl", hash = "sha256:389055682238f53b04f7badcb49b989835495a96700ced5dab2d8feae4b26f51"},
@@ -3242,10 +3242,10 @@ cffi = ["cffi (>=1.11)"]
 
 [extras]
 docs = ["Flask", "myst-parser", "sphinx", "sphinxcontrib-napoleon"]
-fastapi = ["fastapi", "pydantic", "pydantic-settings"]
+fastapi = ["fastapi", "pydantic"]
 flask = ["Flask"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.0"
-content-hash = "8e4a1f51af852f254a587862c8c57eb30a1fdc8ed9363baa1ec063eb03404858"
+content-hash = "f1032323f0d1ddb167d907c8560f7e35f24cb7ba73e5bffbeaed1f6c732634e7"

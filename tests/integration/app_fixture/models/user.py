@@ -4,7 +4,7 @@
 
 from sqlalchemy.orm import Mapped, mapped_column
 
-from sqlalchemy_helpers import Base
+from sqlalchemy_helpers.manager import Base
 
 
 class AppUser(Base):

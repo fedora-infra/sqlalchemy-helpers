@@ -49,7 +49,6 @@ myst-parser = {version = "*", optional = true}
 sphinxcontrib-napoleon = {version = "*", optional = true}
 fastapi = { version = ">=0.100.0", optional = true }
 pydantic = { version = ">=2.0", optional = true }
-pydantic-settings = { version = ">=2.0", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
@@ -71,11 +70,12 @@ psycopg2 = "*"
 asyncpg = "*"
 reuse = "*"
 poetry-plugin-export = "^1.8.0"
+pydantic-settings = ">=2.0"
 mypy = "^1.15.0"
 
 [tool.poetry.extras]
 flask = ["Flask"]
-fastapi = ["fastapi", "pydantic", "pydantic-settings"]
+fastapi = ["fastapi", "pydantic"]
 docs = ["sphinx", "myst-parser", "Flask", "sphinxcontrib-napoleon"]
 
 
