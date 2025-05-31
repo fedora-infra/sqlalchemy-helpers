@@ -17,7 +17,7 @@ from collections.abc import Mapping, MutableMapping
 from contextlib import AbstractContextManager, nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
-from typing import Any, Callable, cast, Self, TYPE_CHECKING, TypeVar
+from typing import Any, Callable, cast, TYPE_CHECKING, TypeVar
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
@@ -28,6 +28,13 @@ from sqlalchemy import event as sa_event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import DeclarativeBase, scoped_session, Session, sessionmaker
+
+
+try:
+    from typing import Self
+except ImportError:  # pragma: no cover
+    # Python < 3.11
+    Self = TypeVar("Self", bound="Base")  # type: ignore
 
 
 _log = logging.getLogger(__name__)

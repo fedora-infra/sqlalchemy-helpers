@@ -11,7 +11,7 @@ This must remain independent from any web framework.
 import logging
 from collections.abc import Mapping, MutableMapping
 from functools import wraps
-from typing import Any, Callable, cast, Self, TYPE_CHECKING, TypeVar, Union
+from typing import Any, Callable, cast, TYPE_CHECKING, TypeVar, Union
 
 from alembic import command
 from alembic.migration import MigrationContext
@@ -35,6 +35,13 @@ from .manager import (
     NAMING_CONVENTION,
     SyncResult,
 )
+
+
+try:
+    from typing import Self
+except ImportError:  # pragma: no cover
+    # Python < 3.11
+    Self = TypeVar("Self", bound="Base")  # type: ignore
 
 
 _log = logging.getLogger(__name__)
