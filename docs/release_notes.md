@@ -8,6 +8,20 @@ This project uses [_towncrier_](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## Version [2.0.1](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v2.0.1)
+
+Released on 2025-05-31. This is a bugfix release.
+
+### Bug Fixes
+
+- Never return `None` when getting the manager or the session from the Flask Extension while outside of the application context.
+
+### Development Improvements
+
+- Add typing to the unit tests
+- Improve typing of the codebase
+
+
 ## Version [2.0.0](https://github.com/fedora-infra/sqlalchemy-helpers/tree/v2.0.0)
 
 This is a major version. The main backwards-incompatible change is that you now
