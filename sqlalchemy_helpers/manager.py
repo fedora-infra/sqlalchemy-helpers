@@ -13,16 +13,17 @@ import logging
 import os
 import warnings
 from abc import ABCMeta, abstractmethod
+from collections.abc import Mapping, MutableMapping
 from contextlib import AbstractContextManager, nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
-from typing import Any, Callable, cast, TypeVar
+from typing import Any, Callable, cast, Self, TYPE_CHECKING, TypeVar
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine, MetaData, select
+from sqlalchemy import Connection, create_engine, MetaData, select
 from sqlalchemy import event as sa_event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import NoResultFound
@@ -44,6 +45,22 @@ class Base(DeclarativeBase):
     """SQLAlchemy's base class for models."""
 
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
+
+    if TYPE_CHECKING:
+        # These methods will be added by the Manager
+        @classmethod
+        def get_by_pk(cls, pk: Any) -> Self | None: ...
+        @classmethod
+        def get_one(cls, **attrs: Any) -> Self: ...
+        @classmethod
+        def get_or_create(cls, **attrs: Any) -> tuple[Self, bool]: ...
+        @classmethod
+        def update_or_create(
+            cls,
+            defaults: Mapping[str, Any] | None = None,
+            create_defaults: Mapping[str, Any] | None = None,
+            **filter_attrs: Any,
+        ) -> tuple[Self, bool]: ...
 
 
 def get_base(*args: Any, **kwargs: Any) -> type[DeclarativeBase]:
@@ -74,7 +91,7 @@ class BaseDatabaseManager(metaclass=ABCMeta):
         uri: str,
         alembic_location: str,
         *,
-        engine_args: dict[str, Any] | None = None,
+        engine_args: MutableMapping[str, Any] | None = None,
         base_model: type[DeclarativeBase] | None = None,
     ):
         self.engine = self._make_engine(uri, engine_args)
@@ -85,7 +102,7 @@ class BaseDatabaseManager(metaclass=ABCMeta):
         self.alembic_cfg.set_main_option("sqlalchemy.url", uri.replace("%", "%%"))
 
     @abstractmethod
-    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> Any: ...
+    def _make_engine(self, uri: str, engine_args: MutableMapping[str, Any] | None) -> Any: ...
 
     def get_latest_revision(self) -> str | None:
         """Get the most up-to-date alembic database revision available."""
@@ -120,7 +137,7 @@ class DatabaseManager(BaseDatabaseManager):
         uri: str,
         alembic_location: str,
         *,
-        engine_args: dict[str, Any] | None = None,
+        engine_args: MutableMapping[str, Any] | None = None,
         base_model: type[DeclarativeBase] | None = None,
     ):
         super().__init__(uri, alembic_location, engine_args=engine_args, base_model=base_model)
@@ -135,7 +152,7 @@ class DatabaseManager(BaseDatabaseManager):
             self.Session, update_or_create
         )
 
-    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> Engine:
+    def _make_engine(self, uri: str, engine_args: MutableMapping[str, Any] | None) -> Engine:
         """Create the SQLAlchemy engine.
 
         Args:
@@ -300,8 +317,8 @@ def get_or_create(session: Session, model: type[M], **attrs: Any) -> tuple[M, bo
 def update_or_create(
     session: Session,
     model: type[M],
-    defaults: dict[str, Any] | None = None,
-    create_defaults: dict[str, Any] | None = None,
+    defaults: Mapping[str, Any] | None = None,
+    create_defaults: Mapping[str, Any] | None = None,
     **filter_attrs: Any,
 ) -> tuple[M, bool]:
     """Function like Django's ``update_or_create()`` method.
@@ -356,7 +373,7 @@ def model_property(func: Callable[..., Any]) -> Any:
 # Migration helpers
 
 
-def is_sqlite(bind: Engine) -> bool:
+def is_sqlite(bind: Engine | Connection) -> bool:
     """Check whether the database is SQLite.
 
     Returns:
@@ -364,7 +381,7 @@ def is_sqlite(bind: Engine) -> bool:
     return bind.dialect.name == "sqlite"
 
 
-def exists_in_db(bind: Engine, tablename: str, columnname: str | None = None) -> bool:
+def exists_in_db(bind: Engine | Connection, tablename: str, columnname: str | None = None) -> bool:
     """Check whether a table and optionally a column exist in the database.
 
     Args:

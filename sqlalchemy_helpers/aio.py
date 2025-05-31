@@ -9,8 +9,9 @@ This must remain independent from any web framework.
 """
 
 import logging
+from collections.abc import Mapping, MutableMapping
 from functools import wraps
-from typing import Any, Callable, cast, TypeVar, Union
+from typing import Any, Callable, cast, Self, TYPE_CHECKING, TypeVar, Union
 
 from alembic import command
 from alembic.migration import MigrationContext
@@ -43,6 +44,23 @@ class Base(AsyncAttrs, DeclarativeBase):
     """SQLAlchemy's base class for async models."""
 
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
+
+    if TYPE_CHECKING:
+        # These methods will be added by the Manager
+        @classmethod
+        async def get_by_pk(cls, session: AsyncSession, pk: Any) -> Self | None: ...
+        @classmethod
+        async def get_one(cls, session: AsyncSession, **attrs: Any) -> Self: ...
+        @classmethod
+        async def get_or_create(cls, session: AsyncSession, **attrs: Any) -> tuple[Self, bool]: ...
+        @classmethod
+        async def update_or_create(
+            cls,
+            session: AsyncSession,
+            defaults: Mapping[str, Any] | None = None,
+            create_defaults: Mapping[str, Any] | None = None,
+            **filter_attrs: Any,
+        ) -> tuple[Self, bool]: ...
 
 
 def _async_from_sync_url(url: Union[URL, str]) -> URL:
@@ -88,7 +106,7 @@ class AsyncDatabaseManager(BaseDatabaseManager):
         uri: str,
         alembic_location: str,
         *,
-        engine_args: dict[str, Any] | None = None,
+        engine_args: MutableMapping[str, Any] | None = None,
         base_model: type[DeclarativeBase] | None = None,
     ):
         super().__init__(uri, alembic_location, engine_args=engine_args, base_model=base_model)
@@ -100,7 +118,7 @@ class AsyncDatabaseManager(BaseDatabaseManager):
         self._base_model.get_or_create = model_property(get_or_create)
         self._base_model.update_or_create = model_property(update_or_create)
 
-    def _make_engine(self, uri: str, engine_args: dict[str, Any] | None) -> AsyncEngine:
+    def _make_engine(self, uri: str, engine_args: MutableMapping[str, Any] | None) -> AsyncEngine:
         """Create the SQLAlchemy engine.
 
         Args:
@@ -259,8 +277,8 @@ async def get_or_create(session: AsyncSession, model: type[M], **attrs: Any) -> 
 async def update_or_create(
     session: AsyncSession,
     model: type[M],
-    defaults: dict[str, Any] | None = None,
-    create_defaults: dict[str, Any] | None = None,
+    defaults: Mapping[str, Any] | None = None,
+    create_defaults: Mapping[str, Any] | None = None,
     **filter_attrs: Any,
 ) -> tuple[M, bool]:
     """Function like Django's ``update_or_create()`` method.

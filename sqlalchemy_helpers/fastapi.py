@@ -6,11 +6,11 @@
 FastAPI integration of database management.
 """
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import click
-from pydantic_settings import BaseSettings
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .aio import AsyncDatabaseManager
@@ -18,7 +18,7 @@ from .manager import SyncResult
 
 
 def manager_from_config(
-    db_settings: dict[str, Any] | BaseSettings, *args: Any, **kwargs: Any
+    db_settings: dict[str, Any] | BaseModel, *args: Any, **kwargs: Any
 ) -> AsyncDatabaseManager:
     """Get the database manager using the FastAPI app's configuration."""
     if not isinstance(db_settings, dict):
@@ -31,7 +31,7 @@ def manager_from_config(
     return manager
 
 
-async def syncdb(db_settings: dict[str, Any] | BaseSettings) -> None:
+async def syncdb(db_settings: dict[str, Any] | BaseModel) -> None:
     """Run :meth:`DatabaseManager.sync` on the command-line."""
     manager = manager_from_config(db_settings)
     result = await manager.sync()
@@ -45,7 +45,7 @@ async def syncdb(db_settings: dict[str, Any] | BaseSettings) -> None:
         click.echo(f"Unexpected sync result: {result}", err=True)
 
 
-async def make_db_session(manager: AsyncDatabaseManager) -> AsyncIterator[AsyncSession]:
+async def make_db_session(manager: AsyncDatabaseManager) -> AsyncGenerator[AsyncSession]:
     """Generate database sessions for FastAPI request handlers.
 
     This lets users declare the session as a dependency in request handler
