@@ -18,7 +18,7 @@ repos:
   # Ruff
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     # Ruff version.
-    rev: v0.12.10
+    rev: v0.13.0
     hooks:
       - id: ruff
         args: ["--diff"]
@@ -32,6 +32,6 @@ repos:
 
   # License headers
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v5.0.2
+    rev: v5.1.1
     hooks:
       - id: reuse
