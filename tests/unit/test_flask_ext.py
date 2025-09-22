@@ -126,3 +126,10 @@ def test_flask_ext_get_url(flask_app_factory: Callable[..., Flask]) -> None:
     flask_app = flask_app_factory({"SQLALCHEMY_DATABASE_URI": "sqlite:////inside/app/context"})
     with flask_app.app_context():
         assert get_url_from_app(factory) == "sqlite:////inside/app/context"
+
+
+def test_flask_ext_teadown_no_manager(flask_app: Flask, flask_client: FlaskClient) -> None:
+    db = DatabaseExtension(flask_app)
+    with flask_app.app_context():
+        # Leave the app context without having ever created the manager
+        assert db._app_manager_name not in flask_app.extensions
