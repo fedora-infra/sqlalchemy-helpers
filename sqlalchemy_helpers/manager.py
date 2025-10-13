@@ -13,11 +13,11 @@ import logging
 import os
 import warnings
 from abc import ABCMeta, abstractmethod
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Callable, Mapping, MutableMapping
 from contextlib import AbstractContextManager, nullcontext
 from functools import partial
 from sqlite3 import Connection as SQLite3Connection
-from typing import Any, Callable, cast, TYPE_CHECKING, TypeVar
+from typing import Any, cast, TYPE_CHECKING, TypeVar
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
