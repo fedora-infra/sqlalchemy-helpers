@@ -9,9 +9,9 @@ This must remain independent from any web framework.
 """
 
 import logging
-from collections.abc import Mapping, MutableMapping
+from collections.abc import Callable, Mapping, MutableMapping
 from functools import wraps
-from typing import Any, Callable, cast, TYPE_CHECKING, TypeVar, Union
+from typing import Any, cast, TYPE_CHECKING, TypeVar
 
 from alembic import command
 from alembic.migration import MigrationContext
@@ -70,7 +70,7 @@ class Base(AsyncAttrs, DeclarativeBase):
         ) -> tuple[Self, bool]: ...
 
 
-def _async_from_sync_url(url: Union[URL, str]) -> URL:
+def _async_from_sync_url(url: URL | str) -> URL:
     """Create an async DB URL from a conventional one."""
     sync_url = make_url(url)
 

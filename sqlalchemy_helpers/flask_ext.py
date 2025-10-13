@@ -7,7 +7,8 @@ Flask integration of database management.
 """
 
 import os
-from typing import Any, Callable, cast, TypeVar
+from collections.abc import Callable
+from typing import Any, cast, TypeVar
 
 import click
 from flask import abort, current_app, Flask, has_app_context

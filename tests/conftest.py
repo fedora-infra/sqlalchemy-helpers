@@ -5,11 +5,11 @@
 import os
 import pathlib
 import sys
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Callable, Generator
 from contextlib import suppress
 from importlib import import_module
 from shutil import copyfile
-from typing import Any, Callable
+from typing import Any
 
 import alembic
 import pytest
