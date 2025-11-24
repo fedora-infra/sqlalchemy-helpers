@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedorapython/fedora-python-tox:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedorapython/fedora-python-tox:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedorapython/fedora-python-tox:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedorapython/fedora-python-tox:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -120,7 +120,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
