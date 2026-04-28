@@ -88,7 +88,8 @@ def test_flask_ext_first_or_404_custom_session(app: dict[str, str]) -> None:
     try:
         first_or_404(select(User).filter_by(name="dummy"), "no such user", session=session)
     except RuntimeError as e:
-        # If no session is given, calling current_app outside the app context will raise RuntimeError
+        # If no session is given, calling current_app outside the app context will
+        # raise RuntimeError
         pytest.fail(str(e))
 
 
@@ -134,3 +135,8 @@ def test_flask_ext_teadown_no_manager(flask_app: Flask, flask_client: FlaskClien
     with flask_app.app_context():
         # Leave the app context without having ever created the manager
         assert db._app_manager_name not in flask_app.extensions
+
+def test_flask_ext_engine_args(flask_app: Flask, flask_client: FlaskClient) -> None:
+    flask_app.config["DB_ENGINE_ARGS"] = {"echo": True}
+    db = DatabaseExtension(flask_app)
+    assert db.manager.engine._echo is True

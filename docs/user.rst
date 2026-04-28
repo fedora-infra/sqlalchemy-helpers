@@ -152,6 +152,10 @@ If you need to define a custom base class, you can pass it to the extension usin
 :meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.__init__` constructor or the
 :meth:`~sqlalchemy_helpers.flask_ext.DatabaseExtension.init_app` function.
 
+If you want to add arguments to SQLAlchemy's ``create_engine()`` function, you can use
+the ``DB_ENGINE_ARGS`` configuration key. For example, setting
+``DB_ENGINE_ARGS = {"echo": True}`` will echo the SQL queries to the standard output.
+
 Models
 ------
 

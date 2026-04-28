@@ -7,6 +7,7 @@ Flask integration of database management.
 """
 
 import os
+import warnings
 from collections.abc import Callable
 from typing import Any, cast, TypeVar
 
@@ -27,6 +28,14 @@ def _get_manager(
     app = app or current_app
     uri = app.config["SQLALCHEMY_DATABASE_URI"]
     alembic_location = app.config["DB_ALEMBIC_LOCATION"]
+    if engine_args:  # pragma: no cover
+        warnings.warn(
+            "The engine_args argument of _get_manager is deprecated, please use the DB_ENGINE_ARGS "
+            "configuration variable in your Flask app.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    engine_args = engine_args or app.config["DB_ENGINE_ARGS"]
     base_model = app.extensions[DatabaseExtension._app_base_model_name]
     manager = DatabaseManager(uri, alembic_location, engine_args=engine_args, base_model=base_model)
     return manager
@@ -77,6 +86,7 @@ class DatabaseExtension:
         if main_module.endswith(".app"):
             main_module = main_module[:-4]
         app.config.setdefault("DB_MODELS_LOCATION", f"{main_module}.models")
+        app.config.setdefault("DB_ENGINE_ARGS", None)
         # Connect hook
         app.before_request(self.before_request)
         # Disconnect hook
