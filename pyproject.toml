@@ -92,7 +92,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "S", "B", "RUF"]
-ignore = ["RUF010", "UP038"]
+ignore = ["RUF010"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
